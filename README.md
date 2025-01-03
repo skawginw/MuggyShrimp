@@ -8,3 +8,5 @@
       https://github.com/Muandeam
     - 651310126 รมิดา สุดสุข: 2D Artist & Game Developer
       https://github.com/jamierlon
+
+GDD: https://www.canva.com/design/DAGbJUl9Djw/AZhWW-xUDfCCXS6mJzpHqQ/edit
