@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - PuzzleObject
+  - DialogButton
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Scratch
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: 1_Sky
+    uniqueID: 2744508337
+    locked: 0
+  - name: 2_Clouds
+    uniqueID: 842395979
+    locked: 0
+  - name: 3_Far(1)
+    uniqueID: 3710480393
+    locked: 0
+  - name: 4_Far(2)
+    uniqueID: 4127006979
+    locked: 0
+  - name: 5_Near(1)
+    uniqueID: 658569851
+    locked: 0
+  - name: 6_Near(2)
+    uniqueID: 169135049
+    locked: 0
+  - name: 7_Ground
+    uniqueID: 2955925883
+    locked: 0
+  - name: ObjectScene
+    uniqueID: 3840996599
+    locked: 0
+  - name: Player
+    uniqueID: 821640005
+    locked: 0
+  - name: Sub_Player
+    uniqueID: 2693504569
+    locked: 0
+  - name: 8_Foreground
+    uniqueID: 3097838491
+    locked: 0
