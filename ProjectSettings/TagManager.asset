@@ -13,7 +13,7 @@ TagManager:
   - Scratch
   - Water
   - UI
-  - 
+  - Cursor
   - 
   - 
   - 
@@ -75,4 +75,10 @@ TagManager:
     locked: 0
   - name: 8_Foreground
     uniqueID: 3097838491
+    locked: 0
+  - name: UI
+    uniqueID: 2810616029
+    locked: 0
+  - name: Cursor
+    uniqueID: 2467519125
     locked: 0
