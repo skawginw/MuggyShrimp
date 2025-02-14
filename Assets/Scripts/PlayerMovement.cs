@@ -10,16 +10,24 @@ public class PlayerMovement : MonoBehaviour
     public Transform sprite; // Reference to the sprite transform
 
     private bool facingRight = true;
+    private bool canMove = true; // Flag to control movement
 
-    // Start is called before the first frame update
-    void Start()
+    // Public method to toggle movement (called from PlayerInteraction)
+    public void SetMovement(bool state)
     {
-
+        canMove = state;
+        if (!canMove)
+        {
+            body.velocity = Vector2.zero; // Stop movement immediately when disabled
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Only allow movement if canMove is true
+        if (!canMove) return;
+
         float xInput = Input.GetAxis("Horizontal");
 
         animator.SetFloat("Speed", Mathf.Abs(xInput));
