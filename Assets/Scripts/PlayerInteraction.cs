@@ -9,8 +9,11 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject pausePanel;
     public GameObject interactText;
     public GameObject pensoDialog;
+    public GameObject jackDialog;
+    public Sprite newSprite; // Assign the new sprite in the Inspector for the "SwapUncle" objects
 
     private bool isCollidingWithMomDialog = false;
+    private bool isCollidingWithJackDialog = false;
     private Transform puzzleObjectTransform; // Transform of the object the player interacts with
 
     private PlayerMovement playerMovement; // Reference to PlayerMovement script
@@ -35,6 +38,11 @@ public class PlayerInteraction : MonoBehaviour
             ToggleMomDialog();
         }
 
+        if (isCollidingWithJackDialog && Input.GetKeyDown(KeyCode.E))
+        {
+            ToggleJackDialog();
+        }
+
         // Handle dialog box and pause panel toggling
         if (Input.GetMouseButtonDown(0) && CompareTag("DialogButton"))
         {
@@ -45,6 +53,12 @@ public class PlayerInteraction : MonoBehaviour
         {
             TogglePausePanel();
         }
+
+        // Handle right-click actions
+        if (Input.GetMouseButtonDown(1))
+        {
+            HandleRightClick();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -52,6 +66,21 @@ public class PlayerInteraction : MonoBehaviour
         if (collision.CompareTag("MomDialog"))
         {
             isCollidingWithMomDialog = true;
+            puzzleObjectTransform = collision.transform;
+
+            // Show the "Hold E to interact" message
+            if (interactText != null)
+            {
+                interactText.SetActive(true);
+                UpdateTextPosition();
+            }
+
+            Debug.Log("Press 'E' to interact.");
+        }
+
+        if (collision.CompareTag("JackDialog"))
+        {
+            isCollidingWithJackDialog = true;
             puzzleObjectTransform = collision.transform;
 
             // Show the "Hold E to interact" message
@@ -78,7 +107,7 @@ public class PlayerInteraction : MonoBehaviour
             }
 
             // Disable player movement for 10 seconds
-            StartCoroutine(DisableMovementForSeconds(10f));
+            StartCoroutine(DisableMovementForSeconds(3f));
 
             Debug.Log("ForceDialog triggered.");
         }
@@ -89,6 +118,17 @@ public class PlayerInteraction : MonoBehaviour
         if (collision.CompareTag("MomDialog"))
         {
             isCollidingWithMomDialog = false;
+
+            // Hide the "Hold E to interact" message
+            if (interactText != null)
+            {
+                interactText.SetActive(false);
+            }
+        }
+
+        if (collision.CompareTag("JackDialog"))
+        {
+            isCollidingWithJackDialog = false;
 
             // Hide the "Hold E to interact" message
             if (interactText != null)
@@ -108,6 +148,19 @@ public class PlayerInteraction : MonoBehaviour
         else
         {
             Debug.LogWarning("MomDialog is not assigned!");
+        }
+    }
+
+    private void ToggleJackDialog()
+    {
+        if (jackDialog != null)
+        {
+            bool isActive = jackDialog.activeSelf;
+            jackDialog.SetActive(!isActive); // Toggle the dialog box visibility
+        }
+        else
+        {
+            Debug.LogWarning("JackDialog is not assigned!");
         }
     }
 
@@ -135,7 +188,7 @@ public class PlayerInteraction : MonoBehaviour
         if (puzzleObjectTransform != null && interactText != null)
         {
             // Position the text above the puzzle object (adjust offset as needed)
-            interactText.transform.position = puzzleObjectTransform.position + new Vector3(0, 1.2f, 0);
+            interactText.transform.position = puzzleObjectTransform.position + new Vector3(0, 1.3f, 0);
         }
     }
 
@@ -160,5 +213,71 @@ public class PlayerInteraction : MonoBehaviour
         {
             pensoDialog.SetActive(false);
         }
+    }
+
+    private void HandleRightClick()
+    {
+        // Get mouse position in world space
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+        // Use Physics2D.OverlapPoint to detect the object under the mouse cursor
+        Collider2D hitCollider = Physics2D.OverlapPoint(new Vector2(mousePosition.x, mousePosition.y));
+
+        if (hitCollider != null)
+        {
+            if (hitCollider.CompareTag("Shadow"))
+            {
+                StartCoroutine(FadeOutAndDestroy(hitCollider.gameObject));
+                Debug.Log("Shadow object fading out and destroyed.");
+            }
+            else if (hitCollider.CompareTag("SwapUncle"))
+            {
+                ChangeSprite(hitCollider.gameObject);
+                Debug.Log("SwapUncle object sprite changed.");
+            }
+        }
+        else
+        {
+            Debug.Log("No object found under the mouse.");
+        }
+    }
+
+    private void ChangeSprite(GameObject obj)
+    {
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null && newSprite != null)
+        {
+            spriteRenderer.sprite = newSprite;
+        }
+        else
+        {
+            Debug.LogWarning("SpriteRenderer or newSprite is missing!");
+        }
+    }
+
+    private IEnumerator FadeOutAndDestroy(GameObject obj)
+    {
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            // Gradually reduce the alpha value of the object's color
+            float fadeDuration = 1f; // Duration of fade in seconds
+            Color color = spriteRenderer.color;
+
+            for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+            {
+                float alpha = Mathf.Lerp(1f, 0f, t / fadeDuration);
+                spriteRenderer.color = new Color(color.r, color.g, color.b, alpha);
+                yield return null; // Wait until the next frame
+            }
+
+            // Ensure the object is fully transparent
+            spriteRenderer.color = new Color(color.r, color.g, color.b, 0f);
+        }
+
+        // Destroy the object
+        Destroy(obj);
     }
 }

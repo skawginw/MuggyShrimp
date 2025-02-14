@@ -9,6 +9,9 @@ TagManager:
   - MomDialog
   - PauseButton
   - ForceDialog
+  - JackDialog
+  - Shadow
+  - SwapUncle
   layers:
   - Default
   - TransparentFX
