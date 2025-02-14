@@ -4,7 +4,8 @@ using TMPro; // Use TextMeshPro for better text rendering
 public class PlayerInteraction : MonoBehaviour
 {
     public GameObject dialogBox;
-    public GameObject momDialog; 
+    public GameObject momDialog;
+    public GameObject pausePanel;
     public GameObject interactText; 
     private bool isCollidingWithMomDialog = false; // Track collision status
     private Transform puzzleObjectTransform; // The transform of the puzzle object
@@ -15,7 +16,12 @@ public class PlayerInteraction : MonoBehaviour
         {
             ToggleDialogBox();
         }
-        
+
+        if (Input.GetMouseButtonDown(0) && CompareTag("PauseButton"))
+        {
+            TogglePausePanel();
+        }
+
         if (isCollidingWithMomDialog && Input.GetKeyDown(KeyCode.E))
         {
             ToggleMomDialog();
@@ -78,9 +84,17 @@ public class PlayerInteraction : MonoBehaviour
             dialogBox.SetActive(!isActive); 
         }
     }
+    public void TogglePausePanel()
+    {
+        if (pausePanel != null)
+        {
+            bool isActive = pausePanel.activeSelf;
+            pausePanel.SetActive(!isActive);
+        }
+    }
 
-        // Update the position of the interact text above the puzzle object
-        private void UpdateTextPosition()
+    // Update the position of the interact text above the puzzle object
+    private void UpdateTextPosition()
     {
         if (puzzleObjectTransform != null && interactText != null)
         {
