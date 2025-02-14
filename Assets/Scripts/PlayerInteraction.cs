@@ -4,9 +4,9 @@ using TMPro; // Use TextMeshPro for better text rendering
 public class PlayerInteraction : MonoBehaviour
 {
     public GameObject dialogBox;
-    public GameObject puzzlePopup; 
+    public GameObject momDialog; 
     public GameObject interactText; 
-    private bool isCollidingWithPuzzleObject = false; // Track collision status
+    private bool isCollidingWithMomDialog = false; // Track collision status
     private Transform puzzleObjectTransform; // The transform of the puzzle object
 
     private void Update()
@@ -16,18 +16,18 @@ public class PlayerInteraction : MonoBehaviour
             ToggleDialogBox();
         }
         
-        if (isCollidingWithPuzzleObject && Input.GetKeyDown(KeyCode.E))
+        if (isCollidingWithMomDialog && Input.GetKeyDown(KeyCode.E))
         {
-            TogglePuzzlePopup();
+            ToggleMomDialog();
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         // Check if the collided object is the puzzle object
-        if (collision.CompareTag("PuzzleObject"))
+        if (collision.CompareTag("MomDialog"))
         {
-            isCollidingWithPuzzleObject = true;
+            isCollidingWithMomDialog = true;
             puzzleObjectTransform = collision.transform;
 
             // Show the "Hold E to interact" message
@@ -45,9 +45,9 @@ public class PlayerInteraction : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         // Reset when the player moves away from the puzzle object
-        if (collision.CompareTag("PuzzleObject"))
+        if (collision.CompareTag("MomDialog"))
         {
-            isCollidingWithPuzzleObject = false;
+            isCollidingWithMomDialog = false;
 
             // Hide the "Hold E to interact" message when leaving the collision area
             if (interactText != null)
@@ -57,12 +57,12 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void TogglePuzzlePopup()
+    private void ToggleMomDialog()
     {
-        if (puzzlePopup != null)
+        if (momDialog != null)
         {
-            bool isActive = puzzlePopup.activeSelf;
-            puzzlePopup.SetActive(!isActive); // Toggle the popup visibility
+            bool isActive = momDialog.activeSelf;
+            momDialog.SetActive(!isActive); // Toggle the popup visibility
         }
         else
         {
@@ -85,7 +85,7 @@ public class PlayerInteraction : MonoBehaviour
         if (puzzleObjectTransform != null && interactText != null)
         {
             // Position the text above the puzzle object (adjust offset as needed)
-            interactText.transform.position = puzzleObjectTransform.position + new Vector3(0, 0.7f, 0);
+            interactText.transform.position = puzzleObjectTransform.position + new Vector3(0, 1.2f, 0);
         }
     }
 }

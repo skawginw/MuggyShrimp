@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PuzzleObject
   - DialogButton
+  - MomDialog
   layers:
   - Default
   - TransparentFX
@@ -67,11 +68,11 @@ TagManager:
   - name: ObjectScene
     uniqueID: 3840996599
     locked: 0
-  - name: Player
-    uniqueID: 821640005
-    locked: 0
   - name: Sub_Player
     uniqueID: 2693504569
+    locked: 0
+  - name: Player
+    uniqueID: 821640005
     locked: 0
   - name: 8_Foreground
     uniqueID: 3097838491

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PuzzlePopup : MonoBehaviour
+public class SettingPopup : MonoBehaviour
 {
     public void ClosePopup()
     {
