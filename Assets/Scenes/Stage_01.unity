@@ -2185,7 +2185,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Setiing
+  m_text: 'Setting
 
 '
   m_isRightToLeft: 0
@@ -3109,7 +3109,7 @@ MonoBehaviour:
   interactText: {fileID: 1237071804}
   pensoDialog: {fileID: 1504914945}
   jackDialog: {fileID: 0}
-  shadow: {fileID: 59053067}
+  newSprite: {fileID: 0}
 --- !u!1 &1641268048
 GameObject:
   m_ObjectHideFlags: 0
