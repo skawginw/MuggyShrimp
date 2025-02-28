@@ -12,7 +12,6 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject jackDialog;
     public GameObject cowMissingLegPanel;
     public GameObject fenceUnlockedPanel;
-    public Sprite newSprite;
     public Sprite newCowSprite;
 
     private bool isCollidingWithMomDialog = false;

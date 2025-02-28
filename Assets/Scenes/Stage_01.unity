@@ -364,7 +364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &59053068
 Transform:
   m_ObjectHideFlags: 0
@@ -4996,7 +4996,6 @@ MonoBehaviour:
   jackDialog: {fileID: 0}
   cowMissingLegPanel: {fileID: 1546393691}
   fenceUnlockedPanel: {fileID: 1208295639}
-  newSprite: {fileID: 0}
   newCowSprite: {fileID: 21300000, guid: 7d2d6967d296207408fe5656058e3a93, type: 3}
 --- !u!114 &1539581812
 MonoBehaviour:
@@ -5062,9 +5061,9 @@ LineRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1827448171
-  m_SortingLayer: 16
-  m_SortingOrder: 0
+  m_SortingLayerID: -668941927
+  m_SortingLayer: 15
+  m_SortingOrder: 10
   m_Positions: []
   m_Parameters:
     serializedVersion: 3
