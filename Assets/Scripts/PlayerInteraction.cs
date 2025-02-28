@@ -10,32 +10,36 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject interactText;
     public GameObject pensoDialog;
     public GameObject jackDialog;
-    public Sprite newSprite; // Assign the new sprite in the Inspector for the "SwapUncle" objects
+    public GameObject cowMissingLegPanel;
+    public GameObject fenceUnlockedPanel;
+    public Sprite newSprite;
+    public Sprite newCowSprite;
 
     private bool isCollidingWithMomDialog = false;
     private bool isCollidingWithJackDialog = false;
-    private Transform puzzleObjectTransform; // Transform of the object the player interacts with
+    private bool isCollidingWithCowMissingLeg = false;
+    private bool isCollidingWithFenceUnlocked = false;
+    private bool hasInteractedWithCowPanel = false;
+    private bool hasInteractedWithFence = false;
+    private bool isMomDialogFinished = false; // Ensures MomDialog only appears once
+    private Transform puzzleObjectTransform;
 
-    private PlayerMovement playerMovement; // Reference to PlayerMovement script
-    private bool forceDialogTriggered = false; // One-time use flag for ForceDialog
+    private PlayerMovement playerMovement;
+    private PlayerDrawing playerDrawing;
+    private bool forceDialogTriggered = false;
+    private bool momDialogTriggered = false;
 
     private void Start()
     {
-        // Get the PlayerMovement component attached to this GameObject
         playerMovement = GetComponent<PlayerMovement>();
-
-        if (playerMovement == null)
-        {
-            Debug.LogError("PlayerMovement script not found on this GameObject!");
-        }
+        playerDrawing = GetComponent<PlayerDrawing>();
     }
 
     private void Update()
     {
-        // Check if the player can interact with the MomDialog
-        if (isCollidingWithMomDialog && Input.GetKeyDown(KeyCode.E))
+        if (isCollidingWithMomDialog && Input.GetKeyDown(KeyCode.E) && !momDialogTriggered && !isMomDialogFinished)
         {
-            ToggleMomDialog();
+            StartCoroutine(HandleMomDialog());
         }
 
         if (isCollidingWithJackDialog && Input.GetKeyDown(KeyCode.E))
@@ -43,73 +47,60 @@ public class PlayerInteraction : MonoBehaviour
             ToggleJackDialog();
         }
 
-        // Handle dialog box and pause panel toggling
-        if (Input.GetMouseButtonDown(0) && CompareTag("DialogButton"))
+        if (isCollidingWithCowMissingLeg && Input.GetKeyDown(KeyCode.E))
         {
-            ToggleDialogBox();
+            ToggleCowMissingLegPanel();
         }
 
-        if (Input.GetMouseButtonDown(0) && CompareTag("PauseButton"))
+        if (isCollidingWithFenceUnlocked && Input.GetKeyDown(KeyCode.E) && !hasInteractedWithFence)
         {
-            TogglePausePanel();
+            ToggleFenceUnlockedPanel();
+            hasInteractedWithFence = true; // Mark interaction as completed
         }
 
-        // Handle right-click actions
-        if (Input.GetMouseButtonDown(1))
-        {
-            HandleRightClick();
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("MomDialog"))
+        if (collision.CompareTag("MomDialog") && !isMomDialogFinished)
         {
             isCollidingWithMomDialog = true;
             puzzleObjectTransform = collision.transform;
-
-            // Show the "Hold E to interact" message
-            if (interactText != null)
-            {
-                interactText.SetActive(true);
-                UpdateTextPosition();
-            }
-
-            Debug.Log("Press 'E' to interact.");
+            interactText?.SetActive(true);
+            UpdateTextPosition(); // Now updates position correctly
         }
 
-        if (collision.CompareTag("JackDialog"))
+        if (collision.CompareTag("FenceUnlocked") && !hasInteractedWithFence)
         {
-            isCollidingWithJackDialog = true;
-            puzzleObjectTransform = collision.transform;
-
-            // Show the "Hold E to interact" message
-            if (interactText != null)
+            if (!isMomDialogFinished)
             {
-                interactText.SetActive(true);
-                UpdateTextPosition();
+                Debug.Log("You must finish the MomDialog before interacting with the fence.");
+                return;
             }
+            isCollidingWithFenceUnlocked = true;
+            puzzleObjectTransform = collision.transform;
+            interactText?.SetActive(true);
+            UpdateTextPosition();
+        }
 
-            Debug.Log("Press 'E' to interact.");
+        if (collision.CompareTag("CowMissingLeg") && !hasInteractedWithCowPanel)
+        {
+            if (!isMomDialogFinished)
+            {
+                Debug.Log("You must finish the MomDialog before interacting with the cow.");
+                return;
+            }
+            isCollidingWithCowMissingLeg = true;
+            puzzleObjectTransform = collision.transform;
+            interactText?.SetActive(true);
+            UpdateTextPosition(); // Now updates position correctly
         }
 
         if (collision.CompareTag("ForceDialog") && !forceDialogTriggered)
         {
-            // Set the one-time use flag
             forceDialogTriggered = true;
-
-            puzzleObjectTransform = collision.transform;
-
-            // Show the penso dialog
-            if (pensoDialog != null)
-            {
-                pensoDialog.SetActive(true);
-            }
-
-            // Disable player movement for 10 seconds
-            StartCoroutine(DisableMovementForSeconds(3f));
-
-            Debug.Log("ForceDialog triggered.");
+            pensoDialog?.SetActive(true);
+            StartCoroutine(DisableMovementForSeconds(3f, true));
         }
     }
 
@@ -118,49 +109,63 @@ public class PlayerInteraction : MonoBehaviour
         if (collision.CompareTag("MomDialog"))
         {
             isCollidingWithMomDialog = false;
-
-            // Hide the "Hold E to interact" message
-            if (interactText != null)
-            {
-                interactText.SetActive(false);
-            }
+            interactText?.SetActive(false);
         }
 
         if (collision.CompareTag("JackDialog"))
         {
             isCollidingWithJackDialog = false;
+            interactText?.SetActive(false);
+        }
 
-            // Hide the "Hold E to interact" message
-            if (interactText != null)
+        if (collision.CompareTag("CowMissingLeg"))
+        {
+            isCollidingWithCowMissingLeg = false;
+            interactText?.SetActive(false);
+        }
+
+        if (collision.CompareTag("FenceUnlocked"))
+        {
+            isCollidingWithFenceUnlocked = false;
+            interactText?.SetActive(false);
+        }
+    }
+
+    private IEnumerator HandleMomDialog()
+    {
+        momDialogTriggered = true;
+        playerMovement?.SetMovement(false);
+        interactText?.SetActive(false);
+        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.E));
+        momDialog?.SetActive(true);
+        yield return new WaitUntil(() => Input.GetKeyDown(KeyCode.E));
+        momDialog?.SetActive(false);
+        playerMovement?.SetMovement(true);
+        isMomDialogFinished = true;
+        momDialogTriggered = false;
+    }
+
+    private IEnumerator DisableMovementForSeconds(float seconds, bool isForceDialog)
+    {
+        playerMovement?.SetMovement(false);
+        yield return new WaitForSeconds(seconds);
+        playerMovement?.SetMovement(true);
+        if (isForceDialog)
+        {
+            pensoDialog?.SetActive(false);
+        }
+    }
+
+    public void ChangeCowMissingLegSprite()
+    {
+        GameObject[] cowObjects = GameObject.FindGameObjectsWithTag("CowMissingLeg");
+        foreach (GameObject cowObject in cowObjects)
+        {
+            SpriteRenderer spriteRenderer = cowObject.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null && newCowSprite != null)
             {
-                interactText.SetActive(false);
+                spriteRenderer.sprite = newCowSprite;
             }
-        }
-    }
-
-    private void ToggleMomDialog()
-    {
-        if (momDialog != null)
-        {
-            bool isActive = momDialog.activeSelf;
-            momDialog.SetActive(!isActive); // Toggle the dialog box visibility
-        }
-        else
-        {
-            Debug.LogWarning("MomDialog is not assigned!");
-        }
-    }
-
-    private void ToggleJackDialog()
-    {
-        if (jackDialog != null)
-        {
-            bool isActive = jackDialog.activeSelf;
-            jackDialog.SetActive(!isActive); // Toggle the dialog box visibility
-        }
-        else
-        {
-            Debug.LogWarning("JackDialog is not assigned!");
         }
     }
 
@@ -179,7 +184,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             bool isActive = pausePanel.activeSelf;
             pausePanel.SetActive(!isActive);
-            Time.timeScale = isActive ? 1 : 0; // Toggle time scale for pausing/unpausing
+            Time.timeScale = isActive ? 1 : 0;
         }
     }
 
@@ -187,97 +192,73 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (puzzleObjectTransform != null && interactText != null)
         {
-            // Position the text above the puzzle object (adjust offset as needed)
             interactText.transform.position = puzzleObjectTransform.position + new Vector3(0, 1.3f, 0);
         }
     }
 
-    private IEnumerator DisableMovementForSeconds(float seconds)
+    public void ToggleJackDialog()
     {
-        if (playerMovement != null)
+        if (jackDialog != null)
         {
-            playerMovement.SetMovement(false); // Disable player movement
-        }
-
-        Debug.Log($"Movement disabled for {seconds} seconds.");
-        yield return new WaitForSeconds(seconds);
-
-        if (playerMovement != null)
-        {
-            playerMovement.SetMovement(true); // Re-enable player movement
-        }
-
-        Debug.Log("Movement re-enabled.");
-
-        if (pensoDialog != null)
-        {
-            pensoDialog.SetActive(false);
+            bool isActive = jackDialog.activeSelf;
+            jackDialog.SetActive(!isActive);
         }
     }
 
-    private void HandleRightClick()
+    public void ToggleCowMissingLegPanel()
     {
-        // Get mouse position in world space
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-        // Use Physics2D.OverlapPoint to detect the object under the mouse cursor
-        Collider2D hitCollider = Physics2D.OverlapPoint(new Vector2(mousePosition.x, mousePosition.y));
-
-        if (hitCollider != null)
+        if (!hasInteractedWithCowPanel && cowMissingLegPanel != null)
         {
-            if (hitCollider.CompareTag("Shadow"))
-            {
-                StartCoroutine(FadeOutAndDestroy(hitCollider.gameObject));
-                Debug.Log("Shadow object fading out and destroyed.");
-            }
-            else if (hitCollider.CompareTag("SwapUncle"))
-            {
-                ChangeSprite(hitCollider.gameObject);
-                Debug.Log("SwapUncle object sprite changed.");
-            }
-        }
-        else
-        {
-            Debug.Log("No object found under the mouse.");
+            bool isActive = cowMissingLegPanel.activeSelf;
+            cowMissingLegPanel.SetActive(!isActive);
+            Time.timeScale = isActive ? 1 : 0;
         }
     }
-
-    private void ChangeSprite(GameObject obj)
+    public void ToggleFenceUnlockedPanel()
     {
-        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer != null && newSprite != null)
+        if (fenceUnlockedPanel != null)
         {
-            spriteRenderer.sprite = newSprite;
-        }
-        else
-        {
-            Debug.LogWarning("SpriteRenderer or newSprite is missing!");
+            bool isActive = fenceUnlockedPanel.activeSelf;
+            fenceUnlockedPanel.SetActive(!isActive); // Toggle panel visibility
         }
     }
-
+    public IEnumerator CloseCowMissingLegPanelAfterDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        if (cowMissingLegPanel != null)
+        {
+            cowMissingLegPanel.SetActive(false);
+            Time.timeScale = 1;
+            hasInteractedWithCowPanel = true;
+        }
+    }
     private IEnumerator FadeOutAndDestroy(GameObject obj)
     {
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 
         if (spriteRenderer != null)
         {
-            // Gradually reduce the alpha value of the object's color
-            float fadeDuration = 1f; // Duration of fade in seconds
+            float fadeDuration = 1f;
             Color color = spriteRenderer.color;
 
             for (float t = 0; t < fadeDuration; t += Time.deltaTime)
             {
                 float alpha = Mathf.Lerp(1f, 0f, t / fadeDuration);
                 spriteRenderer.color = new Color(color.r, color.g, color.b, alpha);
-                yield return null; // Wait until the next frame
+                yield return null;
             }
 
-            // Ensure the object is fully transparent
             spriteRenderer.color = new Color(color.r, color.g, color.b, 0f);
         }
 
-        // Destroy the object
+        CloseFenceUnlockedPanel(); // Close panel before destruction
         Destroy(obj);
+    }
+    public void CloseFenceUnlockedPanel()
+    {
+        if (fenceUnlockedPanel != null)
+        {
+            fenceUnlockedPanel.SetActive(false); // Close the panel
+        }
     }
 }
