@@ -14,6 +14,8 @@ TagManager:
   - SwapUncle
   - CowMissingLeg
   - FenceUnlocked
+  - NotFullBean
+  - ErasableSprite
   layers:
   - Default
   - TransparentFX
@@ -21,9 +23,9 @@ TagManager:
   - Scratch
   - Water
   - UI
+  - Erasable
+  - Eraser
   - Cursor
-  - 
-  - 
   - 
   - 
   - 
@@ -83,6 +85,12 @@ TagManager:
     locked: 0
   - name: 8_Foreground
     uniqueID: 3097838491
+    locked: 0
+  - name: ObjectScene_02
+    uniqueID: 2641719353
+    locked: 0
+  - name: CloseUp
+    uniqueID: 899166957
     locked: 0
   - name: UI
     uniqueID: 2810616029

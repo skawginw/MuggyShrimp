@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7817993441597294625}
   - component: {fileID: 1203541718077240955}
   - component: {fileID: 8542297503612679202}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: EraserBrush
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -76,8 +76,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -462822613
-  m_SortingLayer: 14
-  m_SortingOrder: 0
+  m_SortingLayer: 16
+  m_SortingOrder: 2
   m_Sprite: {fileID: -2413806693520163455, guid: 8cd9fc7906b2f9945ae0a6ea50539f52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 2
+  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!331 &8542297503612679202
 SpriteMask:
@@ -134,9 +134,9 @@ SpriteMask:
   m_MaskAlphaCutoff: 0
   m_FrontSortingLayerID: -462822613
   m_BackSortingLayerID: -462822613
-  m_FrontSortingLayer: 14
-  m_BackSortingLayer: 14
-  m_FrontSortingOrder: 2
-  m_BackSortingOrder: 2
+  m_FrontSortingLayer: 16
+  m_BackSortingLayer: 16
+  m_FrontSortingOrder: 1
+  m_BackSortingOrder: 1
   m_IsCustomRangeActive: 1
   m_SpriteSortPoint: 0

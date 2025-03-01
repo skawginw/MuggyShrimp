@@ -16,7 +16,8 @@ public class PlayerDrawing : MonoBehaviour
 
     void Start()
     {
-        playerInteraction = FindObjectOfType<PlayerInteraction>(); // Find PlayerInteraction in scene
+        playerInteraction = FindObjectOfType<PlayerInteraction>();
+
         if (playerInteraction == null)
         {
             Debug.LogError("PlayerInteraction script not found!");
@@ -24,8 +25,22 @@ public class PlayerDrawing : MonoBehaviour
 
         lineRenderer.positionCount = 0;
         lineRenderer.useWorldSpace = true;
-        lineRenderer.startColor = Color.red;
-        lineRenderer.endColor = Color.red;
+
+        // Set default material to prevent transparency issues
+        if (lineRenderer.material == null)
+        {
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        }
+
+        // Set color & opacity
+        lineRenderer.startColor = new Color(1f, 0f, 0f, 1f); // Red
+        lineRenderer.endColor = new Color(1f, 0f, 0f, 1f);
+        lineRenderer.material.color = Color.grey; // Ensure material uses color
+
+        // Adjust width and sorting order
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        lineRenderer.sortingOrder = 10; // Bring it to the front
     }
 
     void Update()
