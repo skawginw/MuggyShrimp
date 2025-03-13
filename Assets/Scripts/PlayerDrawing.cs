@@ -162,6 +162,7 @@ public class PlayerDrawing : MonoBehaviour
             if (playerInteraction != null)
             {
                 playerInteraction.ChangeCowMissingLegSprite();
+                playerInteraction.CompleteCowMissingLegPuzzle();
             }
             else
             {

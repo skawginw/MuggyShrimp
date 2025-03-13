@@ -13,8 +13,19 @@ public class CheckFullErase : MonoBehaviour
         {
             ChangeFenceSprites(); // Change all FenceUnlocked sprites
             DestroyEraserMarks(); // Remove all eraser marks
-            DisableEraser(); // Disable erasing
+            DisableEraser(); // Disable the eraser script
             Destroy(gameObject); // Destroy the erased sprite
+
+            // Call PlayerInteraction to trigger FenceOpenDialogue automatically
+            PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+            if (playerInteraction != null)
+            {
+                playerInteraction.CheckFencePuzzleCompletion();
+            }
+            else
+            {
+                Debug.LogWarning("PlayerInteraction script not found in the scene!");
+            }
         }
     }
 

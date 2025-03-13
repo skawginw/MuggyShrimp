@@ -16,6 +16,11 @@ TagManager:
   - FenceUnlocked
   - NotFullBean
   - ErasableSprite
+  - Mom
+  - Jack
+  - Fence
+  - BlackFog
+  - SawMomDialogue
   layers:
   - Default
   - TransparentFX
