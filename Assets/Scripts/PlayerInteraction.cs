@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -19,6 +21,7 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject blackFogPuzzlePanel;
     public GameObject pausePanel;
     public Sprite newCowSprite;
+    public string nextSceneName;
 
     private bool hasSeenMom;
     private bool hasTalkedToMomFirst;
@@ -33,6 +36,7 @@ public class PlayerInteraction : MonoBehaviour
     private bool isCollidingWithBlackFog;
     private bool isCollidingWithJack;
     private bool isCollidingWithFence;
+    private bool hasTriggeredSceneChange = false;
 
     private void Start()
     {
@@ -115,6 +119,11 @@ public class PlayerInteraction : MonoBehaviour
         if (collision.CompareTag("Fence"))
         {
             isCollidingWithFence = false;
+        }
+        if (collision.CompareTag("SceneChangeTrigger") && !hasTriggeredSceneChange)
+        {
+            hasTriggeredSceneChange = true;
+            ChangeScene();
         }
     }
 
@@ -207,6 +216,18 @@ public class PlayerInteraction : MonoBehaviour
         {
             panel.SetActive(state);
             Time.timeScale = state ? 0f : 1f; // Stop time when opening, resume when closing
+        }
+    }
+   
+    private void ChangeScene()
+    {
+        if (!string.IsNullOrEmpty(nextSceneName))
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Next scene name is not set!");
         }
     }
 }

@@ -21,6 +21,7 @@ TagManager:
   - Fence
   - BlackFog
   - SawMomDialogue
+  - SceneChangeTrigger
   layers:
   - Default
   - TransparentFX
