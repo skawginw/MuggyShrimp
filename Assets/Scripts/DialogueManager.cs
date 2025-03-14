@@ -10,52 +10,24 @@ public class DialogueManager : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text dialogueText;
 
-    [System.Serializable]
-    public class DialogueCharacterPair
-    {
-        public Dialogue dialogue;
-        public GameObject characterObject;
-    }
-
-    public List<DialogueCharacterPair> dialogueCharacterPairs;
-
-    private Queue<string> dialogueLines;
+    public GameObject characterAnimatorObject;
+    private GameObject currentCharacter = null;
+    private Queue<DialogueLine> dialogueLines;
     private System.Action onDialogueComplete;
-    private GameObject currentCharacterObject = null;
+
     private void Awake()
     {
-        dialogueLines = new Queue<string>();
+        dialogueLines = new Queue<DialogueLine>();
         DisableAllCharacters(); 
     }
 
     public void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
         dialogueBox.SetActive(true);
+        DisableAllCharacters(); 
 
-        DisableAllCharacters();
-
-        foreach (DialogueCharacterPair pair in dialogueCharacterPairs)
-        {
-            if (pair.dialogue == dialogue)
-            {
-                currentCharacterObject = pair.characterObject;
-                if (currentCharacterObject != null)
-                {
-                    currentCharacterObject.SetActive(true);
-                    Animator animator = currentCharacterObject.GetComponent<Animator>();
-                    if (animator != null)
-                    {
-                        animator.Play("Idle"); 
-                    }
-                }
-                break;
-            }
-        }
-
-        nameText.text = dialogue.characterName;
         dialogueLines.Clear();
-
-        foreach (string line in dialogue.lines)
+        foreach (DialogueLine line in dialogue.lines)
         {
             dialogueLines.Enqueue(line);
         }
@@ -72,10 +44,40 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        string line = dialogueLines.Dequeue();
+        DialogueLine currentLine = dialogueLines.Dequeue(); 
+        nameText.text = currentLine.characterName;
+        dialogueText.text = ""; 
+
+        
+        DisableAllCharacters();
+        if (currentLine.characterAnimation != null)
+        {
+            
+            foreach (Transform child in characterAnimatorObject.transform)
+            {
+                Animator animator = child.GetComponent<Animator>();
+                if (animator != null && animator.runtimeAnimatorController == currentLine.characterAnimation)
+                {
+                    currentCharacter = child.gameObject;
+                    currentCharacter.SetActive(true); 
+                    StartCoroutine(PlayAnimationWithDelay(animator, "Idle")); 
+                    break;
+                }
+            }
+        }
+
+       
         StopAllCoroutines();
-        StartCoroutine(TypeLine(line));
+        StartCoroutine(TypeLine(currentLine.text));
     }
+
+   
+    private IEnumerator PlayAnimationWithDelay(Animator animator, string animationName)
+    {
+        yield return new WaitForEndOfFrame(); 
+        animator.Play(animationName);
+    }
+
 
     IEnumerator TypeLine(string line)
     {
@@ -83,25 +85,22 @@ public class DialogueManager : MonoBehaviour
         foreach (char letter in line.ToCharArray())
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.02f); 
         }
     }
 
     private void EndDialogue()
     {
         dialogueBox.SetActive(false);
-        DisableAllCharacters();
+        DisableAllCharacters(); 
         onDialogueComplete?.Invoke();
     }
 
     private void DisableAllCharacters()
     {
-        foreach (DialogueCharacterPair pair in dialogueCharacterPairs)
+        foreach (Transform child in characterAnimatorObject.transform)
         {
-            if (pair.characterObject != null)
-            {
-                pair.characterObject.SetActive(false);
-            }
+            child.gameObject.SetActive(false); 
         }
     }
 

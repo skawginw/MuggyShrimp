@@ -80,6 +80,9 @@ TagManager:
   - name: 7_Ground
     uniqueID: 2955925883
     locked: 0
+  - name: GroundShadow
+    uniqueID: 2627385563
+    locked: 0
   - name: ObjectScene
     uniqueID: 3840996599
     locked: 0
