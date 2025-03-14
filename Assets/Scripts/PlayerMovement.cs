@@ -7,25 +7,25 @@ public class PlayerMovement : MonoBehaviour
     public float speed;
     public Rigidbody2D body;
     public Animator animator;
-    public Transform sprite; // Reference to the sprite transform
+    public Transform sprite;
+    public AudioSource audioSource; 
+    public AudioClip walkingSound;
 
     private bool facingRight = true;
-    private bool canMove = true; // Flag to control movement
+    private bool canMove = true;
 
-    // Public method to toggle movement (called from PlayerInteraction)
     public void SetMovement(bool state)
     {
         canMove = state;
         if (!canMove)
         {
-            body.velocity = Vector2.zero; // Stop movement immediately when disabled
+            body.velocity = Vector2.zero;
+            StopWalkingSound();
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Only allow movement if canMove is true
         if (!canMove) return;
 
         float xInput = Input.GetAxis("Horizontal");
@@ -35,8 +35,8 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(xInput) > 0)
         {
             body.velocity = new Vector2(xInput * speed, body.velocity.y);
+            PlayWalkingSound(); 
 
-            // Check the direction and flip the sprite
             if (xInput > 0 && !facingRight)
             {
                 Flip();
@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             body.velocity = new Vector2(0f, body.velocity.y);
+            StopWalkingSound();
         }
     }
 
@@ -56,9 +57,26 @@ public class PlayerMovement : MonoBehaviour
     {
         facingRight = !facingRight;
 
-        // Flip the sprite by inverting its local scale on the X-axis
         Vector3 localScale = sprite.localScale;
         localScale.x *= -1;
         sprite.localScale = localScale;
+    }
+
+    private void PlayWalkingSound()
+    {
+        if (audioSource != null && walkingSound != null && !audioSource.isPlaying)
+        {
+            audioSource.clip = walkingSound;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+    }
+
+    private void StopWalkingSound()
+    {
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 }

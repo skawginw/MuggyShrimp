@@ -9,22 +9,24 @@ public class DialogueManager : MonoBehaviour
     public GameObject dialogueBox;
     public TMP_Text nameText;
     public TMP_Text dialogueText;
-
     public GameObject characterAnimatorObject;
-    private GameObject currentCharacter = null;
+    public AudioSource audioSource; 
+    public AudioClip typingSound;   
+
     private Queue<DialogueLine> dialogueLines;
     private System.Action onDialogueComplete;
 
     private void Awake()
     {
         dialogueLines = new Queue<DialogueLine>();
-        DisableAllCharacters(); 
+        characterAnimatorObject.SetActive(false);
     }
 
     public void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
         dialogueBox.SetActive(true);
-        DisableAllCharacters(); 
+        Time.timeScale = 1f;
+        DisableAllCharacters();
 
         dialogueLines.Clear();
         foreach (DialogueLine line in dialogue.lines)
@@ -44,40 +46,40 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        DialogueLine currentLine = dialogueLines.Dequeue(); 
+        DialogueLine currentLine = dialogueLines.Dequeue();
         nameText.text = currentLine.characterName;
-        dialogueText.text = ""; 
+        dialogueText.text = "";
 
-        
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
+        if (audioSource != null && typingSound != null)
+        {
+            audioSource.clip = typingSound;
+            audioSource.loop = true; 
+            audioSource.Play();
+        }
+
         DisableAllCharacters();
         if (currentLine.characterAnimation != null)
         {
-            
             foreach (Transform child in characterAnimatorObject.transform)
             {
                 Animator animator = child.GetComponent<Animator>();
                 if (animator != null && animator.runtimeAnimatorController == currentLine.characterAnimation)
                 {
-                    currentCharacter = child.gameObject;
-                    currentCharacter.SetActive(true); 
-                    StartCoroutine(PlayAnimationWithDelay(animator, "Idle")); 
+                    child.gameObject.SetActive(true);
+                    StartCoroutine(PlayAnimationWithDelay(animator, "Idle"));
                     break;
                 }
             }
         }
 
-       
         StopAllCoroutines();
         StartCoroutine(TypeLine(currentLine.text));
     }
-
-   
-    private IEnumerator PlayAnimationWithDelay(Animator animator, string animationName)
-    {
-        yield return new WaitForEndOfFrame(); 
-        animator.Play(animationName);
-    }
-
 
     IEnumerator TypeLine(string line)
     {
@@ -85,14 +87,27 @@ public class DialogueManager : MonoBehaviour
         foreach (char letter in line.ToCharArray())
         {
             dialogueText.text += letter;
-            yield return new WaitForSeconds(0.02f); 
+            yield return new WaitForSeconds(0.02f);
         }
+
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+    }
+
+
+    private IEnumerator PlayAnimationWithDelay(Animator animator, string animationName)
+    {
+        yield return new WaitForEndOfFrame();
+        animator.Play(animationName);
     }
 
     private void EndDialogue()
     {
         dialogueBox.SetActive(false);
-        DisableAllCharacters(); 
+        DisableAllCharacters();
+        Time.timeScale = 1f;
         onDialogueComplete?.Invoke();
     }
 
@@ -100,7 +115,7 @@ public class DialogueManager : MonoBehaviour
     {
         foreach (Transform child in characterAnimatorObject.transform)
         {
-            child.gameObject.SetActive(false); 
+            child.gameObject.SetActive(false);
         }
     }
 

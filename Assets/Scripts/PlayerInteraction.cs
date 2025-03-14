@@ -21,6 +21,7 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject fenceUnlockedPanel;
     public GameObject blackFogPuzzlePanel;
     public GameObject pausePanel;
+    public GameObject settingPanel;
     public Sprite newCowSprite;
     public string nextSceneName;
 
@@ -142,6 +143,8 @@ public class PlayerInteraction : MonoBehaviour
     public void CompleteCowMissingLegPuzzle()
     {
         hasCompletedCowMissingLeg = true;
+        Time.timeScale = 1f;
+
         StartCoroutine(CloseCowMissingLegPanelAfterDelay(2f, () => StartDialogue(jackSecondDialogue, () => hasTalkedToJackSecond = true)));
         ChangeCowMissingLegSprite();
     }
@@ -202,6 +205,10 @@ public class PlayerInteraction : MonoBehaviour
     public void TogglePausePanel()
     {
         TogglePanel(pausePanel, !pausePanel.activeSelf);
+    }
+    public void ToggleSettingPanel()
+    {
+        TogglePanel(settingPanel, !settingPanel.activeSelf);
     }
 
     private void TogglePanel(GameObject panel, bool state)
