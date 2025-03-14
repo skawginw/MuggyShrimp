@@ -1,44 +1,136 @@
 using UnityEngine;
+using System.Collections;
 
 public class CheckFullErase : MonoBehaviour
 {
-    public Transform eraserParent; // Assign the "EraserParent"
-    public int eraseThreshold = 900; // Adjust based on how many eraser marks are needed
-    public Sprite newFenceSprite; // Assign the new sprite in the Inspector
-    public BrushEraser eraserScript; // Assign the BrushEraser script (on EraserParent)
+    public Transform eraserParent;
+    public int eraseThreshold = 900;
+    public Sprite newFenceSprite;
+    public BrushEraser eraserScript;
 
-    void Update()
+    public GameObject blackFogPuzzlePanel;
+    public GameObject blackFogObject;
+    public float fadeDuration = 2f;
+
+    private bool isFencePuzzle = false;
+    private bool isBlackFogPuzzle = false;
+    private bool puzzleCompleted = false;
+    private int initialEraseCount;
+
+    void Start()
     {
-        if (eraserParent.childCount >= eraseThreshold)
+        if (gameObject.CompareTag("ErasableSprite"))
         {
-            ChangeFenceSprites(); // Change all FenceUnlocked sprites
-            DestroyEraserMarks(); // Remove all eraser marks
-            DisableEraser(); // Disable the eraser script
-            Destroy(gameObject); // Destroy the erased sprite
-
-            // Call PlayerInteraction to trigger FenceOpenDialogue automatically
-            PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
-            if (playerInteraction != null)
+            if (transform.parent != null && transform.parent.CompareTag("LockedBlackFog"))
             {
-                playerInteraction.CheckFencePuzzleCompletion();
+                isBlackFogPuzzle = true;
             }
             else
             {
-                Debug.LogWarning("PlayerInteraction script not found in the scene!");
+                isFencePuzzle = true;
             }
         }
+
+        initialEraseCount = eraserParent.childCount;
+    }
+
+    void Update()
+    {
+        if (!puzzleCompleted && (eraserParent.childCount - initialEraseCount) >= eraseThreshold)
+        {
+            puzzleCompleted = true;
+
+            if (isFencePuzzle)
+            {
+                CompleteFencePuzzle();
+            }
+            else if (isBlackFogPuzzle)
+            {
+                CompleteBlackFogPuzzle();
+            }
+        }
+    }
+
+    void CompleteFencePuzzle()
+    {
+        ChangeFenceSprites();
+        DestroyEraserMarks();
+        DisableEraser();
+        Destroy(gameObject);
+
+        PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+        if (playerInteraction != null)
+        {
+            playerInteraction.CheckFencePuzzleCompletion();
+        }
+        else
+        {
+            Debug.LogWarning("PlayerInteraction script not found in the scene!");
+        }
+    }
+
+    void CompleteBlackFogPuzzle()
+    {
+        Debug.Log("BlackFog Puzzle Erased! Fading out BlackFog...");
+
+        DestroyEraserMarks();
+        DisableEraser();
+        Destroy(gameObject); 
+
+        if (blackFogPuzzlePanel != null)
+        {
+            blackFogPuzzlePanel.SetActive(false);
+        }
+
+        PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+        if (playerInteraction != null)
+        {
+            if (blackFogObject != null)
+            {
+                playerInteraction.StartCoroutine(FadeOutAndDestroy(blackFogObject, fadeDuration));
+            }
+
+            playerInteraction.CompleteBlackFog();
+        }
+        else
+        {
+            Debug.LogWarning("PlayerInteraction script not found in the scene!");
+        }
+    }
+
+    IEnumerator FadeOutAndDestroy(GameObject obj, float duration)
+    {
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            float startAlpha = spriteRenderer.color.a;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                float alpha = Mathf.Lerp(startAlpha, 0f, elapsedTime / duration);
+                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
+
+            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0f);
+        }
+
+        Debug.Log("BlackFog completely faded out, destroying now...");
+        Destroy(obj); 
     }
 
     void ChangeFenceSprites()
     {
         GameObject[] fences = GameObject.FindGameObjectsWithTag("FenceUnlocked");
-
         foreach (GameObject fence in fences)
         {
             SpriteRenderer fenceRenderer = fence.GetComponent<SpriteRenderer>();
             if (fenceRenderer != null)
             {
-                fenceRenderer.sprite = newFenceSprite; // Change sprite
+                fenceRenderer.sprite = newFenceSprite;
             }
         }
     }
@@ -47,7 +139,7 @@ public class CheckFullErase : MonoBehaviour
     {
         foreach (Transform child in eraserParent)
         {
-            Destroy(child.gameObject); // Remove all eraser marks
+            Destroy(child.gameObject);
         }
     }
 
@@ -55,7 +147,7 @@ public class CheckFullErase : MonoBehaviour
     {
         if (eraserScript != null)
         {
-            eraserScript.enabled = false; // Disable the eraser script
+            eraserScript.enabled = false;
         }
     }
 }

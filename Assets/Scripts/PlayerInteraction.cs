@@ -27,7 +27,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool hasSeenMom;
     private bool hasTalkedToMomFirst;
-    private bool hasCompletedBlackFog;
+    private bool hasCompletedBlackFog = false; 
     private bool hasTalkedToMomSecond;
     private bool hasTalkedToJack;
     private bool hasCompletedFencePuzzle;
@@ -161,8 +161,15 @@ public class PlayerInteraction : MonoBehaviour
     {
         TogglePanel(blackFogPuzzlePanel, true);
         yield return new WaitForSecondsRealtime(3f);
-        TogglePanel(blackFogPuzzlePanel, false);
-        CompleteBlackFog();
+
+    }
+
+    public void CheckBlackFogPuzzleCompletion()
+    {
+        if (!hasCompletedBlackFog)
+        {
+            CompleteBlackFog(); 
+        }
     }
 
     private IEnumerator TriggerOpeningDialogue()
@@ -222,6 +229,12 @@ public class PlayerInteraction : MonoBehaviour
 
     private void ChangeScene()
     {
+        if (!hasTalkedToMomThird)
+        {
+            Debug.Log("You must finish MomThirdDialogue before leaving the scene!");
+            return;
+        }
+
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);

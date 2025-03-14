@@ -22,6 +22,7 @@ TagManager:
   - BlackFog
   - SawMomDialogue
   - SceneChangeTrigger
+  - LockedBlackFog
   layers:
   - Default
   - TransparentFX

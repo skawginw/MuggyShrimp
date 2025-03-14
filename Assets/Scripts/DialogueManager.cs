@@ -19,7 +19,13 @@ public class DialogueManager : MonoBehaviour
     private void Awake()
     {
         dialogueLines = new Queue<DialogueLine>();
-        characterAnimatorObject.SetActive(false);
+
+        if (characterAnimatorObject != null)
+        {
+            characterAnimatorObject.SetActive(true);
+        }
+
+        DisableAllCharacters();
     }
 
     public void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
@@ -58,22 +64,38 @@ public class DialogueManager : MonoBehaviour
         if (audioSource != null && typingSound != null)
         {
             audioSource.clip = typingSound;
-            audioSource.loop = true; 
+            audioSource.loop = true;
             audioSource.Play();
         }
 
+        
         DisableAllCharacters();
+
         if (currentLine.characterAnimation != null)
         {
+            bool characterFound = false;
+
             foreach (Transform child in characterAnimatorObject.transform)
             {
                 Animator animator = child.GetComponent<Animator>();
-                if (animator != null && animator.runtimeAnimatorController == currentLine.characterAnimation)
+
+                if (animator != null)
                 {
-                    child.gameObject.SetActive(true);
-                    StartCoroutine(PlayAnimationWithDelay(animator, "Idle"));
-                    break;
+                   
+                    if (animator.runtimeAnimatorController == currentLine.characterAnimation)
+                    {
+                        child.gameObject.SetActive(true); 
+                        animator.runtimeAnimatorController = currentLine.characterAnimation; 
+                        StartCoroutine(PlayAnimationWithDelay(animator, "Idle")); 
+                        characterFound = true;
+                        break;
+                    }
                 }
+            }
+
+            if (!characterFound)
+            {
+                Debug.LogWarning("No matching character found for animation: " + currentLine.characterAnimation.name);
             }
         }
 
@@ -113,9 +135,12 @@ public class DialogueManager : MonoBehaviour
 
     private void DisableAllCharacters()
     {
-        foreach (Transform child in characterAnimatorObject.transform)
+        if (characterAnimatorObject != null)
         {
-            child.gameObject.SetActive(false);
+            foreach (Transform child in characterAnimatorObject.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
         }
     }
 
