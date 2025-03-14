@@ -6542,7 +6542,7 @@ MonoBehaviour:
   pausePanel: {fileID: 1917000554}
   settingPanel: {fileID: 577422936}
   newCowSprite: {fileID: 21300000, guid: 7d2d6967d296207408fe5656058e3a93, type: 3}
-  nextSceneName: Stage_02
+  nextSceneName: MenuScene
 --- !u!114 &1539581812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8357,7 +8357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1752470925
 RectTransform:
   m_ObjectHideFlags: 0
