@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class PlayerInteraction : MonoBehaviour
 {
-    public GameObject dialogBox;
-    public GameObject openingDialogue;
-    public GameObject sawMomDialogue;
-    public GameObject momFirstDialogue;
-    public GameObject finishBlackFogDialogue;
-    public GameObject momSecondDialogue;
-    public GameObject jackFirstDialogue;
-    public GameObject jackSecondDialogue;
-    public GameObject fenceOpenDialogue;
+    public DialogueManager dialogueManager; // Reference to DialogueManager
+
+    public Dialogue openingDialogue;
+    public Dialogue sawMomDialogue;
+    public Dialogue momFirstDialogue;
+    public Dialogue finishBlackFogDialogue;
+    public Dialogue momSecondDialogue;
+    public Dialogue jackFirstDialogue;
+    public Dialogue jackSecondDialogue;
+    public Dialogue fenceOpenDialogue;
+    public Dialogue momThirdDialogue;
+
     public GameObject cowMissingLegPanel;
-    public GameObject momThirdDialogue;
     public GameObject fenceUnlockedPanel;
     public GameObject blackFogPuzzlePanel;
     public GameObject pausePanel;
@@ -49,15 +50,15 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (!hasTalkedToMomFirst && hasSeenMom)
             {
-                StartCoroutine(TriggerDialogue(momFirstDialogue, () => hasTalkedToMomFirst = true));
+                StartDialogue(momFirstDialogue, () => hasTalkedToMomFirst = true);
             }
             else if (hasCompletedBlackFog && !hasTalkedToMomSecond)
             {
-                StartCoroutine(TriggerDialogue(momSecondDialogue, () => hasTalkedToMomSecond = true));
+                StartDialogue(momSecondDialogue, () => hasTalkedToMomSecond = true);
             }
             else if (hasTalkedToJackSecond && hasCompletedCowMissingLeg && !hasTalkedToMomThird)
             {
-                StartCoroutine(TriggerDialogue(momThirdDialogue, () => hasTalkedToMomThird = true));
+                StartDialogue(momThirdDialogue, () => hasTalkedToMomThird = true);
             }
         }
 
@@ -68,7 +69,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (isCollidingWithJack && Input.GetKeyDown(KeyCode.E) && hasTalkedToMomSecond && !hasTalkedToJack)
         {
-            StartCoroutine(TriggerDialogue(jackFirstDialogue, () => hasTalkedToJack = true));
+            StartDialogue(jackFirstDialogue, () => hasTalkedToJack = true);
         }
 
         if (isCollidingWithFence && Input.GetKeyDown(KeyCode.E) && hasTalkedToJack && !hasCompletedFencePuzzle)
@@ -81,8 +82,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (collision.CompareTag("SawMomDialogue") && !hasSeenMom)
         {
-            StartCoroutine(TriggerDialogue(sawMomDialogue));
-            hasSeenMom = true;
+            StartDialogue(sawMomDialogue, () => hasSeenMom = true);
         }
         if (collision.CompareTag("Mom"))
         {
@@ -130,19 +130,19 @@ public class PlayerInteraction : MonoBehaviour
     public void CompleteBlackFog()
     {
         hasCompletedBlackFog = true;
-        StartCoroutine(TriggerDialogue(finishBlackFogDialogue));
+        StartDialogue(finishBlackFogDialogue);
     }
 
     public void CompleteFencePuzzle()
     {
         hasCompletedFencePuzzle = true;
-        StartCoroutine(TriggerDialogue(fenceOpenDialogue, () => TogglePanel(cowMissingLegPanel, true)));
+        StartDialogue(fenceOpenDialogue, () => TogglePanel(cowMissingLegPanel, true));
     }
 
     public void CompleteCowMissingLegPuzzle()
     {
         hasCompletedCowMissingLeg = true;
-        StartCoroutine(CloseCowMissingLegPanelAfterDelay(2f, () => StartCoroutine(TriggerDialogue(jackSecondDialogue, () => hasTalkedToJackSecond = true))));
+        StartCoroutine(CloseCowMissingLegPanelAfterDelay(2f, () => StartDialogue(jackSecondDialogue, () => hasTalkedToJackSecond = true)));
         ChangeCowMissingLegSprite();
     }
 
@@ -164,20 +164,15 @@ public class PlayerInteraction : MonoBehaviour
 
     private IEnumerator TriggerOpeningDialogue()
     {
-        yield return new WaitForSeconds(1f); // Small delay before triggering
-        yield return TriggerDialogue(openingDialogue);
+        yield return new WaitForSeconds(1f);
+        StartDialogue(openingDialogue);
     }
 
-    private IEnumerator TriggerDialogue(GameObject dialogue, System.Action onComplete = null)
+    private void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
-        if (dialogue != null)
+        if (dialogueManager != null && dialogue != null)
         {
-            Time.timeScale = 0f; // Stop time
-            dialogue.SetActive(true);
-            yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
-            dialogue.SetActive(false);
-            Time.timeScale = 1f; // Resume time
-            onComplete?.Invoke();
+            dialogueManager.StartDialogue(dialogue, onComplete);
         }
     }
 
@@ -187,7 +182,6 @@ public class PlayerInteraction : MonoBehaviour
         if (cowMissingLegPanel != null)
         {
             cowMissingLegPanel.SetActive(false);
-            Time.timeScale = 0f;
             onComplete?.Invoke();
         }
     }
@@ -215,10 +209,10 @@ public class PlayerInteraction : MonoBehaviour
         if (panel != null)
         {
             panel.SetActive(state);
-            Time.timeScale = state ? 0f : 1f; // Stop time when opening, resume when closing
+            Time.timeScale = state ? 0f : 1f;
         }
     }
-   
+
     private void ChangeScene()
     {
         if (!string.IsNullOrEmpty(nextSceneName))
