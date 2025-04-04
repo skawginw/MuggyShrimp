@@ -4,30 +4,40 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerInteraction : MonoBehaviour
-{
-    public DialogueManager dialogueManager; // Reference to DialogueManager
-
-    public Dialogue openingDialogue;
-    public Dialogue sawMomDialogue;
-    public Dialogue momFirstDialogue;
-    public Dialogue finishBlackFogDialogue;
-    public Dialogue momSecondDialogue;
-    public Dialogue jackFirstDialogue;
-    public Dialogue jackSecondDialogue;
-    public Dialogue fenceOpenDialogue;
+{ // Stage 01 Dialogues and Panels
+    public Dialogue openingDialogue; 
+    public Dialogue sawMomDialogue; 
+    public Dialogue momFirstDialogue; 
+    public Dialogue finishBlackFogDialogue; 
+    public Dialogue momSecondDialogue; 
+    public Dialogue jackFirstDialogue; 
+    public Dialogue jackSecondDialogue; 
+    public Dialogue fenceOpenDialogue; 
     public Dialogue momThirdDialogue;
 
     public GameObject cowMissingLegPanel;
     public GameObject fenceUnlockedPanel;
     public GameObject blackFogPuzzlePanel;
+
+    // Stage 02 Dialogues and Panels
+    public Dialogue stage02Dialogue;
+    public Dialogue brokenShelfDialogue;
+    public Dialogue finishBrokenShelfDialogue;
+    public Dialogue uncleFirstDialogue;
+
+    public GameObject brokenShelfPuzzlePanel;
+
+    // Common Panels
     public GameObject pausePanel;
     public GameObject settingPanel;
+
     public Sprite newCowSprite;
     public string nextSceneName;
 
+    // Stage 01 Flags
     private bool hasSeenMom;
     private bool hasTalkedToMomFirst;
-    private bool hasCompletedBlackFog = false; 
+    private bool hasCompletedBlackFog = false;
     private bool hasTalkedToMomSecond;
     private bool hasTalkedToJack;
     private bool hasCompletedFencePuzzle;
@@ -40,13 +50,31 @@ public class PlayerInteraction : MonoBehaviour
     private bool isCollidingWithFence;
     private bool hasTriggeredSceneChange = false;
 
+    // Stage 02 Flags
+    private bool hasSeenBrokenShelfDialogue = false;
+    private bool hasCompletedBrokenShelfPuzzle = false;
+    private bool isCollidingWithBrokenShelf = false;
+    private bool isCollidingWithUncle = false;
+    private bool hasTalkedToUncle = false;
+
+    public DialogueManager dialogueManager; // Reference to DialogueManager
+
     private void Start()
     {
-        StartCoroutine(TriggerOpeningDialogue());
+        // If Stage02Dialogue is assigned, assume we're in Stage 02; otherwise, run Stage 01 flow.
+        if (stage02Dialogue != null)
+        {
+            StartCoroutine(TriggerStage02Dialogue());
+        }
+        else
+        {
+            StartCoroutine(TriggerOpeningDialogue());
+        }
     }
 
     private void Update()
     {
+        // --- Stage 01 interactions ---
         if (isCollidingWithMom && Input.GetKeyDown(KeyCode.E))
         {
             if (!hasTalkedToMomFirst && hasSeenMom)
@@ -77,10 +105,22 @@ public class PlayerInteraction : MonoBehaviour
         {
             TogglePanel(fenceUnlockedPanel, true);
         }
+
+        // --- Stage 02 interactions ---
+        if (isCollidingWithBrokenShelf && Input.GetKeyDown(KeyCode.E) && hasSeenBrokenShelfDialogue && !hasCompletedBrokenShelfPuzzle)
+        {
+            TogglePanel(brokenShelfPuzzlePanel, true);
+        }
+
+        if (isCollidingWithUncle && Input.GetKeyDown(KeyCode.E) && hasCompletedBrokenShelfPuzzle && !hasTalkedToUncle)
+        {
+            StartDialogue(uncleFirstDialogue, () => hasTalkedToUncle = true);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // --- Stage 01 triggers ---
         if (collision.CompareTag("SawMomDialogue") && !hasSeenMom)
         {
             StartDialogue(sawMomDialogue, () => hasSeenMom = true);
@@ -101,10 +141,25 @@ public class PlayerInteraction : MonoBehaviour
         {
             isCollidingWithFence = true;
         }
+
+        // --- Stage 02 triggers ---
+        if (collision.CompareTag("BrokenShelfDialogue") && !hasSeenBrokenShelfDialogue)
+        {
+            StartDialogue(brokenShelfDialogue, () => hasSeenBrokenShelfDialogue = true);
+        }
+        if (collision.CompareTag("BrokenShelf"))
+        {
+            isCollidingWithBrokenShelf = true;
+        }
+        if (collision.CompareTag("Uncle"))
+        {
+            isCollidingWithUncle = true;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        // --- Stage 01 exit triggers ---
         if (collision.CompareTag("Mom"))
         {
             isCollidingWithMom = false;
@@ -126,8 +181,19 @@ public class PlayerInteraction : MonoBehaviour
             hasTriggeredSceneChange = true;
             ChangeScene();
         }
+
+        // --- Stage 02 exit triggers ---
+        if (collision.CompareTag("BrokenShelf"))
+        {
+            isCollidingWithBrokenShelf = false;
+        }
+        if (collision.CompareTag("Uncle"))
+        {
+            isCollidingWithUncle = false;
+        }
     }
 
+    // --- Stage 01 methods ---
     public void CompleteBlackFog()
     {
         hasCompletedBlackFog = true;
@@ -144,7 +210,6 @@ public class PlayerInteraction : MonoBehaviour
     {
         hasCompletedCowMissingLeg = true;
         Time.timeScale = 1f;
-
         StartCoroutine(CloseCowMissingLegPanelAfterDelay(2f, () => StartDialogue(jackSecondDialogue, () => hasTalkedToJackSecond = true)));
         ChangeCowMissingLegSprite();
     }
@@ -161,14 +226,13 @@ public class PlayerInteraction : MonoBehaviour
     {
         TogglePanel(blackFogPuzzlePanel, true);
         yield return new WaitForSecondsRealtime(3f);
-
     }
 
     public void CheckBlackFogPuzzleCompletion()
     {
         if (!hasCompletedBlackFog)
         {
-            CompleteBlackFog(); 
+            CompleteBlackFog();
         }
     }
 
@@ -176,6 +240,20 @@ public class PlayerInteraction : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         StartDialogue(openingDialogue);
+    }
+
+    // --- Stage 02 methods ---
+    private IEnumerator TriggerStage02Dialogue()
+    {
+        yield return new WaitForSeconds(1f);
+        StartDialogue(stage02Dialogue);
+    }
+
+    // Call this from your BrokenShelf puzzle script when the puzzle is finished.
+    public void CompleteBrokenShelfPuzzle()
+    {
+        hasCompletedBrokenShelfPuzzle = true;
+        StartDialogue(finishBrokenShelfDialogue);
     }
 
     private void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
@@ -213,6 +291,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         TogglePanel(pausePanel, !pausePanel.activeSelf);
     }
+
     public void ToggleSettingPanel()
     {
         TogglePanel(settingPanel, !settingPanel.activeSelf);
@@ -234,7 +313,6 @@ public class PlayerInteraction : MonoBehaviour
             Debug.Log("You must finish MomThirdDialogue before leaving the scene!");
             return;
         }
-
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
