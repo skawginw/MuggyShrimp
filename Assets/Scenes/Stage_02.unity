@@ -2416,7 +2416,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 1
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -7183,8 +7183,8 @@ MonoBehaviour:
   cowMissingLegPanel: {fileID: 0}
   fenceUnlockedPanel: {fileID: 0}
   blackFogPuzzlePanel: {fileID: 0}
-  stage02Dialogue: {fileID: 0}
-  brokenShelfDialogue: {fileID: 0}
+  stage02Dialogue: {fileID: 11400000, guid: 2e6d2e6a7cb0f1a46ac8f6943afb00f4, type: 2}
+  brokenShelfDialogue: {fileID: 11400000, guid: 6bc3b24ad76dba84d911483183ab0416, type: 2}
   finishBrokenShelfDialogue: {fileID: 0}
   uncleFirstDialogue: {fileID: 0}
   brokenShelfPuzzlePanel: {fileID: 0}
@@ -7205,7 +7205,7 @@ GameObject:
   - component: {fileID: 1580854881}
   - component: {fileID: 1580854880}
   - component: {fileID: 1580854879}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Cursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

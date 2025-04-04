@@ -4992,7 +4992,7 @@ GameObject:
   - component: {fileID: 1074940154}
   - component: {fileID: 1074940153}
   - component: {fileID: 1074940155}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Cursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6526,7 +6526,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975e7c6b0d0126d4482a71a95600831e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueManager: {fileID: 350700615}
   openingDialogue: {fileID: 11400000, guid: 987a6def76a84294b86089c08bec52eb, type: 2}
   sawMomDialogue: {fileID: 11400000, guid: 77ecc155285a3bc439449cbf43e8c1e9, type: 2}
   momFirstDialogue: {fileID: 11400000, guid: a926f1ef701601b458c119e0790eaddc, type: 2}
@@ -6539,10 +6538,16 @@ MonoBehaviour:
   cowMissingLegPanel: {fileID: 1546393691}
   fenceUnlockedPanel: {fileID: 1208295639}
   blackFogPuzzlePanel: {fileID: 1624521947}
+  stage02Dialogue: {fileID: 0}
+  brokenShelfDialogue: {fileID: 0}
+  finishBrokenShelfDialogue: {fileID: 0}
+  uncleFirstDialogue: {fileID: 0}
+  brokenShelfPuzzlePanel: {fileID: 0}
   pausePanel: {fileID: 1917000554}
   settingPanel: {fileID: 577422936}
   newCowSprite: {fileID: 21300000, guid: 7d2d6967d296207408fe5656058e3a93, type: 3}
   nextSceneName: MenuScene
+  dialogueManager: {fileID: 350700615}
 --- !u!114 &1539581812
 MonoBehaviour:
   m_ObjectHideFlags: 0
