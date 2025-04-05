@@ -10,10 +10,14 @@ public class CheckFullErase : MonoBehaviour
 
     public GameObject blackFogPuzzlePanel;
     public GameObject blackFogObject;
+
+    public GameObject brokenShelfPuzzlePanel;
+
     public float fadeDuration = 2f;
 
     private bool isFencePuzzle = false;
     private bool isBlackFogPuzzle = false;
+    private bool isBrokenShelfPuzzle = false;
     private bool puzzleCompleted = false;
     private int initialEraseCount;
 
@@ -21,13 +25,20 @@ public class CheckFullErase : MonoBehaviour
     {
         if (gameObject.CompareTag("ErasableSprite"))
         {
-            if (transform.parent != null && transform.parent.CompareTag("LockedBlackFog"))
+            if (transform.parent != null)
             {
-                isBlackFogPuzzle = true;
-            }
-            else
-            {
-                isFencePuzzle = true;
+                if (transform.parent.CompareTag("LockedBlackFog"))
+                {
+                    isBlackFogPuzzle = true;
+                }
+                else if (transform.parent.CompareTag("LockedBrokenShelf"))
+                {
+                    isBrokenShelfPuzzle = true;
+                }
+                else
+                {
+                    isFencePuzzle = true;
+                }
             }
         }
 
@@ -48,6 +59,10 @@ public class CheckFullErase : MonoBehaviour
             {
                 CompleteBlackFogPuzzle();
             }
+            else if (isBrokenShelfPuzzle)
+            {
+                CompleteBrokenShelfPuzzle();
+            }
         }
     }
 
@@ -63,19 +78,13 @@ public class CheckFullErase : MonoBehaviour
         {
             playerInteraction.CheckFencePuzzleCompletion();
         }
-        else
-        {
-            Debug.LogWarning("PlayerInteraction script not found in the scene!");
-        }
     }
 
     void CompleteBlackFogPuzzle()
     {
-        Debug.Log("BlackFog Puzzle Erased! Fading out BlackFog...");
-
         DestroyEraserMarks();
         DisableEraser();
-        Destroy(gameObject); 
+        Destroy(gameObject);
 
         if (blackFogPuzzlePanel != null)
         {
@@ -92,34 +101,58 @@ public class CheckFullErase : MonoBehaviour
 
             playerInteraction.CompleteBlackFog();
         }
+    }
+
+    void CompleteBrokenShelfPuzzle()
+    {
+        DestroyEraserMarks();
+        DisableEraser();
+        puzzleCompleted = true;
+
+        if (brokenShelfPuzzlePanel != null)
+        {
+            brokenShelfPuzzlePanel.SetActive(false);
+        }
+
+        
+        if (gameObject != null)
+        {
+            gameObject.SetActive(false); // or use Destroy(gameObject) if you prefer
+        }
+
+        PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+        if (playerInteraction != null)
+        {
+            playerInteraction.CompleteBrokenShelfPuzzle(); 
+        }
         else
         {
-            Debug.LogWarning("PlayerInteraction script not found in the scene!");
+            Debug.LogWarning("PlayerInteraction not found!");
         }
     }
 
+
     IEnumerator FadeOutAndDestroy(GameObject obj, float duration)
     {
-        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+        SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
 
-        if (spriteRenderer != null)
+        if (sr != null)
         {
-            float startAlpha = spriteRenderer.color.a;
-            float elapsedTime = 0f;
+            float startAlpha = sr.color.a;
+            float elapsed = 0f;
 
-            while (elapsedTime < duration)
+            while (elapsed < duration)
             {
-                float alpha = Mathf.Lerp(startAlpha, 0f, elapsedTime / duration);
-                spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, alpha);
-                elapsedTime += Time.deltaTime;
+                float alpha = Mathf.Lerp(startAlpha, 0f, elapsed / duration);
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, alpha);
+                elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0f);
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0f);
         }
 
-        Debug.Log("BlackFog completely faded out, destroying now...");
-        Destroy(obj); 
+        Destroy(obj);
     }
 
     void ChangeFenceSprites()
@@ -127,10 +160,10 @@ public class CheckFullErase : MonoBehaviour
         GameObject[] fences = GameObject.FindGameObjectsWithTag("FenceUnlocked");
         foreach (GameObject fence in fences)
         {
-            SpriteRenderer fenceRenderer = fence.GetComponent<SpriteRenderer>();
-            if (fenceRenderer != null)
+            SpriteRenderer sr = fence.GetComponent<SpriteRenderer>();
+            if (sr != null)
             {
-                fenceRenderer.sprite = newFenceSprite;
+                sr.sprite = newFenceSprite;
             }
         }
     }

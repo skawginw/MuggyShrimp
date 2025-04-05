@@ -26,6 +26,7 @@ TagManager:
   - BrokenShelf
   - NPC
   - BrokenShelfDialogue
+  - LockedBrokenShelf
   layers:
   - Default
   - TransparentFX
@@ -114,8 +115,14 @@ TagManager:
   - name: Erasable
     uniqueID: 3832144683
     locked: 0
+  - name: Eraser
+    uniqueID: 4115655669
+    locked: 0
   - name: Line
     uniqueID: 3626025369
+    locked: 0
+  - name: SpecialForeGround
+    uniqueID: 338696251
     locked: 0
   - name: Cursor
     uniqueID: 2467519125

@@ -47,7 +47,9 @@ public class BrushEraser : MonoBehaviour
 
     void CreateEraserAt(Vector2 position)
     {
-        GameObject eraser = Instantiate(eraserPrefab, position, Quaternion.identity, eraserParent);
-        eraser.transform.localScale = Vector3.one * eraserSize; // Adjust eraser size
+        Vector3 fixedPos = new Vector3(position.x, position.y, 0f); // Force Z = 0
+        GameObject eraser = Instantiate(eraserPrefab, fixedPos, Quaternion.identity, eraserParent);
+        eraser.transform.localScale = Vector3.one * eraserSize;
     }
+
 }
