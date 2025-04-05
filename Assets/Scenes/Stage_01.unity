@@ -1172,6 +1172,7 @@ MonoBehaviour:
   eraserScript: {fileID: 855914249}
   blackFogPuzzlePanel: {fileID: 1624521947}
   blackFogObject: {fileID: 2109820469}
+  brokenShelfPuzzlePanel: {fileID: 0}
   fadeDuration: 2
 --- !u!212 &291339330
 SpriteRenderer:
@@ -5065,7 +5066,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1827448171
-  m_SortingLayer: 19
+  m_SortingLayer: 21
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0afce83da18124549ac659c002f83e79, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -6526,6 +6527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 975e7c6b0d0126d4482a71a95600831e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dialogueManager: {fileID: 350700615}
   openingDialogue: {fileID: 11400000, guid: 987a6def76a84294b86089c08bec52eb, type: 2}
   sawMomDialogue: {fileID: 11400000, guid: 77ecc155285a3bc439449cbf43e8c1e9, type: 2}
   momFirstDialogue: {fileID: 11400000, guid: a926f1ef701601b458c119e0790eaddc, type: 2}
@@ -6546,8 +6548,9 @@ MonoBehaviour:
   pausePanel: {fileID: 1917000554}
   settingPanel: {fileID: 577422936}
   newCowSprite: {fileID: 21300000, guid: 7d2d6967d296207408fe5656058e3a93, type: 3}
-  nextSceneName: MenuScene
-  dialogueManager: {fileID: 350700615}
+  nextSceneName: Stage_02
+  currentBrokenShelfObject: {fileID: 0}
+  npcDialogue: {fileID: 0}
 --- !u!114 &1539581812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6613,7 +6616,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -668941927
-  m_SortingLayer: 18
+  m_SortingLayer: 19
   m_SortingOrder: 10
   m_Positions: []
   m_Parameters:
@@ -8838,6 +8841,7 @@ MonoBehaviour:
   eraserScript: {fileID: 1492676599}
   blackFogPuzzlePanel: {fileID: 0}
   blackFogObject: {fileID: 0}
+  brokenShelfPuzzlePanel: {fileID: 0}
   fadeDuration: 2
 --- !u!61 &1815130220
 BoxCollider2D:
