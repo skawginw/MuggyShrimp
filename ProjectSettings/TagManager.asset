@@ -27,6 +27,8 @@ TagManager:
   - NPC
   - BrokenShelfDialogue
   - LockedBrokenShelf
+  - Sky
+  - BeanTree
   layers:
   - Default
   - TransparentFX
@@ -34,10 +36,10 @@ TagManager:
   - Scratch
   - Water
   - UI
+  - UI_02
   - Erasable
   - Eraser
   - Cursor
-  - 
   - 
   - 
   - 
