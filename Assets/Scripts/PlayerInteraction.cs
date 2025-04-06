@@ -13,6 +13,15 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject skyObject;
     public GameObject beanTreeObject;
 
+    // === Opening Scene ===
+    public Dialogue openingSceneDialogue;
+    public Dialogue metPensoDialogue;
+
+    public GameObject bookPanel;
+    public Animator bookshelfAnimator;
+
+    public string stage01SceneName;
+
     // === Stage 01 ===
     public Dialogue openingDialogue;
     public Dialogue sawMomDialogue;
@@ -92,6 +101,8 @@ public class PlayerInteraction : MonoBehaviour
     private bool hasHeardJackFourth = false;
     private bool hasHeardMomFifth = false;
     private bool isCollidingWithMomStage03;
+    private bool isCollidingWithBeanTree = false;
+
 
     // === Stage 04 Flags ===
     private bool hasFinishedStage04Dialogue = false;
@@ -105,23 +116,61 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Start()
     {
-        if (stage04Dialogue != null)
+        if (fadeOverlay != null)
         {
-            StartCoroutine(TriggerStage04Dialogue());
-        }
-        else if (stage03Dialogue != null)
-        {
-            StartCoroutine(TriggerStage03Dialogue());
-        }
-        else if (stage02Dialogue != null)
-        {
-            StartCoroutine(TriggerStage02Dialogue());
+            fadeOverlay.gameObject.SetActive(true);
+
+            StartCoroutine(FadeFromBlack(() =>
+            {
+                // After fade-in, continue normal scene flow
+                if (openingSceneDialogue != null)
+                {
+                    StartCoroutine(BeginOpeningSceneFlow());
+                }
+                else if (stage04Dialogue != null)
+                {
+                    StartCoroutine(TriggerStage04Dialogue());
+                }
+                else if (stage03Dialogue != null)
+                {
+                    StartCoroutine(TriggerStage03Dialogue());
+                }
+                else if (stage02Dialogue != null)
+                {
+                    StartCoroutine(TriggerStage02Dialogue());
+                }
+                else
+                {
+                    StartCoroutine(TriggerOpeningDialogue());
+                }
+            }));
         }
         else
         {
-            StartCoroutine(TriggerOpeningDialogue());
+            // Fallback if fadeOverlay isn't assigned
+            if (openingSceneDialogue != null)
+            {
+                StartCoroutine(BeginOpeningSceneFlow());
+            }
+            else if (stage04Dialogue != null)
+            {
+                StartCoroutine(TriggerStage04Dialogue());
+            }
+            else if (stage03Dialogue != null)
+            {
+                StartCoroutine(TriggerStage03Dialogue());
+            }
+            else if (stage02Dialogue != null)
+            {
+                StartCoroutine(TriggerStage02Dialogue());
+            }
+            else
+            {
+                StartCoroutine(TriggerOpeningDialogue());
+            }
         }
     }
+
 
     private void Update()
     {
@@ -173,6 +222,12 @@ public class PlayerInteraction : MonoBehaviour
             });
         }
 
+        if (isCollidingWithBeanTree && Input.GetKeyDown(KeyCode.E) && hasHeardMomFifth)
+        {
+            ChangeScene();
+        }
+
+
         // === NPC Repeatable ===
         if (isCollidingWithNPC && Input.GetKeyDown(KeyCode.E))
         {
@@ -217,6 +272,11 @@ public class PlayerInteraction : MonoBehaviour
         // === Stage 03 ===
         if (collision.CompareTag("Mom")) isCollidingWithMomStage03 = true;
 
+        if (collision.CompareTag("BeanTree"))
+        {
+            isCollidingWithBeanTree = true;
+        }
+
         // === Stage 04 ===
         if (collision.CompareTag("SawCastle") && !hasSeenCastle)
         {
@@ -259,6 +319,11 @@ public class PlayerInteraction : MonoBehaviour
 
         if (collision.CompareTag("Uncle")) isCollidingWithUncle = false;
         if (collision.CompareTag("NPC")) isCollidingWithNPC = false;
+
+        if (collision.CompareTag("BeanTree"))
+        {
+            isCollidingWithBeanTree = false;
+        }
     }
 
     private void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
@@ -548,6 +613,12 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
+        if (stage03Dialogue != null && !hasHeardMomFifth)
+        {
+            Debug.Log("You must finish MomFifthDialogue before leaving the scene!");
+            return;
+        }
+
         if (!string.IsNullOrEmpty(nextSceneName))
         {
             SceneManager.LoadScene(nextSceneName);
@@ -644,6 +715,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (fadeOverlay == null) yield break;
 
+        fadeOverlay.gameObject.SetActive(true);
         Color baseColor = fadeOverlay.color;
         float time = 0f;
 
@@ -702,4 +774,86 @@ public class PlayerInteraction : MonoBehaviour
 
         afterReveal?.Invoke();
     }
+    private IEnumerator BeginOpeningSceneFlow()
+    {
+
+        if (bookPanel != null)
+            bookPanel.SetActive(true);
+
+        StartDialogue(openingSceneDialogue, () =>
+        {
+            StartCoroutine(FadeOutBookPanel()); 
+        });
+
+        yield return null;
+    }
+
+
+    private IEnumerator FadeOutBookPanel()
+    {
+        yield return new WaitForSecondsRealtime(0.2f);
+
+        if (fadeOverlay != null)
+            fadeOverlay.gameObject.SetActive(true);
+
+        float time = 0f;
+        Color baseColor = fadeOverlay.color;
+
+        while (time < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0f, 1f, time / fadeDuration);
+            fadeOverlay.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        if (bookPanel != null)
+            bookPanel.SetActive(false);
+
+        StartCoroutine(FadeFromBlack(() =>
+        {
+            StartBookshelfAnimation();
+        }));
+    }
+    private void StartBookshelfAnimation()
+    {
+        if (bookshelfAnimator != null)
+        {
+            bookshelfAnimator.gameObject.SetActive(true);
+            bookshelfAnimator.Play("BookShelfOpen"); // Make sure this matches your animation name
+
+            // Wait for animation to finish, then trigger next
+            StartCoroutine(WaitForBookshelfAnimation());
+        }
+    }
+    private IEnumerator WaitForBookshelfAnimation()
+    {
+        yield return new WaitForSeconds(bookshelfAnimator.GetCurrentAnimatorStateInfo(0).length + 0.1f);
+        yield return new WaitForSecondsRealtime(2f);
+
+        StartDialogue(metPensoDialogue, () =>
+        {
+            StartCoroutine(GoToStage01());
+        });
+    }
+    private IEnumerator GoToStage01()
+    {
+        if (fadeOverlay != null)
+        {
+            fadeOverlay.gameObject.SetActive(true);
+            Color color = fadeOverlay.color;
+            float time = 0f;
+
+            while (time < fadeDuration)
+            {
+                float alpha = Mathf.Lerp(0f, 1f, time / fadeDuration);
+                fadeOverlay.color = new Color(color.r, color.g, color.b, alpha);
+                time += Time.unscaledDeltaTime;
+                yield return null;
+            }
+        }
+
+        SceneManager.LoadScene(stage01SceneName);
+    }
+
 }
