@@ -29,6 +29,7 @@ TagManager:
   - LockedBrokenShelf
   - Sky
   - BeanTree
+  - SawCastle
   layers:
   - Default
   - TransparentFX

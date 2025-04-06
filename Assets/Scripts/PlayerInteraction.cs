@@ -48,6 +48,10 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject skipTheDayPanel;
     public GameObject skipToDayPanel;
 
+    // === Stage 04 ===
+    public Dialogue stage04Dialogue;
+    public Dialogue sawCastleDialogue;
+
     // === Common Panels ===
     public GameObject pausePanel;
     public GameObject settingPanel;
@@ -89,6 +93,11 @@ public class PlayerInteraction : MonoBehaviour
     private bool hasHeardMomFifth = false;
     private bool isCollidingWithMomStage03;
 
+    // === Stage 04 Flags ===
+    private bool hasFinishedStage04Dialogue = false;
+    private bool hasSeenCastle = false;
+    private bool hasFinishedSawCastleDialogue = false;
+
     // === Repeatable NPC Dialogue ===
     public Dialogue npcDialogue;
     private bool isCollidingWithNPC;
@@ -96,7 +105,11 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Start()
     {
-        if (stage03Dialogue != null)
+        if (stage04Dialogue != null)
+        {
+            StartCoroutine(TriggerStage04Dialogue());
+        }
+        else if (stage03Dialogue != null)
         {
             StartCoroutine(TriggerStage03Dialogue());
         }
@@ -204,6 +217,25 @@ public class PlayerInteraction : MonoBehaviour
         // === Stage 03 ===
         if (collision.CompareTag("Mom")) isCollidingWithMomStage03 = true;
 
+        // === Stage 04 ===
+        if (collision.CompareTag("SawCastle") && !hasSeenCastle)
+        {
+            if (hasFinishedStage04Dialogue)
+            {
+                hasSeenCastle = true;
+                StartDialogue(sawCastleDialogue, () =>
+                {
+                    hasFinishedSawCastleDialogue = true;
+                });
+            }
+            else
+            {
+                Debug.Log("Must finish Stage04Dialogue before triggering castle.");
+            }
+        }
+
+
+
         // === NPC ===
         if (collision.CompareTag("NPC")) isCollidingWithNPC = true;
     }
@@ -253,6 +285,14 @@ public class PlayerInteraction : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
         StartDialogue(stage03Dialogue, () => hasFinishedStage03Dialogue = true);
+    }
+    private IEnumerator TriggerStage04Dialogue()
+    {
+        yield return new WaitForSeconds(1f);
+        StartDialogue(stage04Dialogue, () =>
+        {
+            hasFinishedStage04Dialogue = true;
+        });
     }
 
     private IEnumerator ShowBlackFogPuzzlePanel()
@@ -484,6 +524,12 @@ public class PlayerInteraction : MonoBehaviour
 
     private void ChangeScene()
     {
+        if (stage04Dialogue != null && !hasFinishedSawCastleDialogue)
+        {
+            Debug.Log("You must finish SawCastleDialogue before leaving the scene!");
+            return;
+        }
+
         if (stage03Dialogue != null && !hasHeardMomFifth)
         {
             Debug.Log("You must finish MomFifthDialogue before leaving the scene!");
@@ -496,7 +542,7 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        if (stage02Dialogue == null && stage03Dialogue == null && !hasTalkedToMomThird)
+        if (stage02Dialogue == null && stage03Dialogue == null && stage04Dialogue == null && !hasTalkedToMomThird)
         {
             Debug.Log("You must finish MomThirdDialogue before leaving the scene!");
             return;
@@ -511,6 +557,7 @@ public class PlayerInteraction : MonoBehaviour
             Debug.LogWarning("Next scene name is not set!");
         }
     }
+
     private IEnumerator FadeOutPanelThenBack(GameObject panelToClose, Action afterFade = null)
     {
         if (fadeOverlay == null) yield break;
@@ -655,5 +702,4 @@ public class PlayerInteraction : MonoBehaviour
 
         afterReveal?.Invoke();
     }
-
 }
