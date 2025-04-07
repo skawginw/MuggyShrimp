@@ -1248,6 +1248,8 @@ MonoBehaviour:
   blackFogPuzzlePanel: {fileID: 1624521947}
   blackFogObject: {fileID: 2109820469}
   brokenShelfPuzzlePanel: {fileID: 0}
+  eraseCagePanel: {fileID: 0}
+  eraseBagOfFogPanel: {fileID: 0}
   fadeDuration: 2
 --- !u!212 &291339330
 SpriteRenderer:
@@ -2044,6 +2046,81 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &382181436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 382181437}
+  - component: {fileID: 382181439}
+  - component: {fileID: 382181438}
+  m_Layer: 5
+  m_Name: Tutorial
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &382181437
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382181436}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1509474675}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &382181438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382181436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: e176534e133d6e34aafa72f93216fc04, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &382181439
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 382181436}
+  m_CullTransparentMesh: 1
 --- !u!1 &416104607
 GameObject:
   m_ObjectHideFlags: 0
@@ -6499,6 +6576,7 @@ RectTransform:
   - {fileID: 1208295640}
   - {fileID: 1624521948}
   - {fileID: 67860715}
+  - {fileID: 382181437}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6608,6 +6686,8 @@ MonoBehaviour:
   fadeDuration: 1
   skyObject: {fileID: 0}
   beanTreeObject: {fileID: 0}
+  cageObject: {fileID: 0}
+  tutorialPanel: {fileID: 382181436}
   openingSceneDialogue: {fileID: 0}
   metPensoDialogue: {fileID: 0}
   bookPanel: {fileID: 0}
@@ -6641,6 +6721,30 @@ MonoBehaviour:
   skipToDayPanel: {fileID: 0}
   stage04Dialogue: {fileID: 0}
   sawCastleDialogue: {fileID: 0}
+  enterGiantHouseDialogue: {fileID: 0}
+  holeOnTheWallDialogue: {fileID: 0}
+  subStage05SceneName: 
+  storageDialogue: {fileID: 0}
+  sawChickenDialogue: {fileID: 0}
+  finishEraseCageDialogue: {fileID: 0}
+  bagOfFogDialogue: {fileID: 0}
+  eraseCagePanel: {fileID: 0}
+  bagOfFogPanel: {fileID: 0}
+  scene06Name: 
+  eraseBagOfFogPanel: {fileID: 0}
+  finishEraseBagOfFogDialogue: {fileID: 0}
+  escapeFromGiantPanel: {fileID: 0}
+  escapeFromGiantDialogue: {fileID: 0}
+  climbingBeanTreePanel: {fileID: 0}
+  climbingBeanTreeDialogue: {fileID: 0}
+  chopBeanTreePanel: {fileID: 0}
+  chopBeanTreeDialogue: {fileID: 0}
+  stage07SceneName: 
+  stage07Dialogue: {fileID: 0}
+  momSixthDialogue: {fileID: 0}
+  momSeventhDialogue: {fileID: 0}
+  goldenChickenPanel: {fileID: 0}
+  endingSceneName: 
   pausePanel: {fileID: 1917000554}
   settingPanel: {fileID: 577422936}
   newCowSprite: {fileID: 21300000, guid: 7d2d6967d296207408fe5656058e3a93, type: 3}
@@ -8938,6 +9042,8 @@ MonoBehaviour:
   blackFogPuzzlePanel: {fileID: 0}
   blackFogObject: {fileID: 0}
   brokenShelfPuzzlePanel: {fileID: 0}
+  eraseCagePanel: {fileID: 0}
+  eraseBagOfFogPanel: {fileID: 0}
   fadeDuration: 2
 --- !u!61 &1815130220
 BoxCollider2D:

@@ -13,6 +13,8 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject skyObject;
     public GameObject beanTreeObject;
     public GameObject cageObject; // Assign in the Inspector
+    public GameObject tutorialPanel;  // Assign in inspector
+    private bool hasFinishedTutorial = false;
 
 
     // === Opening Scene ===
@@ -190,8 +192,13 @@ public class PlayerInteraction : MonoBehaviour
 
             StartCoroutine(FadeFromBlack(() =>
             {
-                // After fade-in, continue normal scene flow
-                if (openingSceneDialogue != null)
+                // === Tutorial Panel (Stage_01 only) ===
+                if (tutorialPanel != null)
+                {
+                    tutorialPanel.SetActive(true);
+                    StartCoroutine(HideTutorialThenTriggerOpening());
+                }
+                else if (openingSceneDialogue != null)
                 {
                     StartCoroutine(BeginOpeningSceneFlow());
                 }
@@ -233,8 +240,13 @@ public class PlayerInteraction : MonoBehaviour
         }
         else
         {
-            // Fallback if fadeOverlay isn't assigned
-            if (openingSceneDialogue != null)
+            // === Fallback if fadeOverlay is missing ===
+            if (tutorialPanel != null)
+            {
+                tutorialPanel.SetActive(true);
+                StartCoroutine(HideTutorialThenTriggerOpening());
+            }
+            else if (openingSceneDialogue != null)
             {
                 StartCoroutine(BeginOpeningSceneFlow());
             }
@@ -263,6 +275,7 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
     }
+
 
     private void Update()
     {
@@ -486,6 +499,20 @@ public class PlayerInteraction : MonoBehaviour
             isCollidingWithMomStage07 = false;
         }
     }
+    private IEnumerator HideTutorialThenTriggerOpening()
+{
+    yield return new WaitForSecondsRealtime(3f);
+
+    if (tutorialPanel != null)
+        tutorialPanel.SetActive(false);
+
+    hasFinishedTutorial = true;
+
+    yield return new WaitForSecondsRealtime(0.3f); 
+    StartCoroutine(TriggerOpeningDialogue());
+}
+
+
 
     private void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
