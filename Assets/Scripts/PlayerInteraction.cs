@@ -12,6 +12,8 @@ public class PlayerInteraction : MonoBehaviour
     public float fadeDuration = 1f;
     public GameObject skyObject;
     public GameObject beanTreeObject;
+    public GameObject cageObject; // Assign in the Inspector
+
 
     // === Opening Scene ===
     public Dialogue openingSceneDialogue;
@@ -61,6 +63,45 @@ public class PlayerInteraction : MonoBehaviour
     public Dialogue stage04Dialogue;
     public Dialogue sawCastleDialogue;
 
+    // === Stage 05 ===
+    public Dialogue enterGiantHouseDialogue;
+    public Dialogue holeOnTheWallDialogue;
+
+    public string subStage05SceneName;
+
+    // === Sub_Stage_05 ===
+    public Dialogue storageDialogue;
+    public Dialogue sawChickenDialogue;
+    public Dialogue finishEraseCageDialogue;
+    public Dialogue bagOfFogDialogue;
+
+    public GameObject eraseCagePanel;
+    public GameObject bagOfFogPanel;
+
+    public string scene06Name;
+
+    // === Stage 06 ===
+    public GameObject eraseBagOfFogPanel;
+    public Dialogue finishEraseBagOfFogDialogue;
+
+    public GameObject escapeFromGiantPanel;
+    public Dialogue escapeFromGiantDialogue;
+
+    public GameObject climbingBeanTreePanel;
+    public Dialogue climbingBeanTreeDialogue;
+
+    public GameObject chopBeanTreePanel;
+    public Dialogue chopBeanTreeDialogue;
+
+    public string stage07SceneName;
+
+    // === Stage 07 ===
+    public Dialogue stage07Dialogue;
+    public Dialogue momSixthDialogue;
+    public Dialogue momSeventhDialogue;
+    public GameObject goldenChickenPanel;
+    public string endingSceneName;
+
     // === Common Panels ===
     public GameObject pausePanel;
     public GameObject settingPanel;
@@ -109,6 +150,33 @@ public class PlayerInteraction : MonoBehaviour
     private bool hasSeenCastle = false;
     private bool hasFinishedSawCastleDialogue = false;
 
+    // === Stage 05 Flags ===
+    private bool hasFinishedGiantHouseDialogue = false;
+    private bool hasSeenHoleOnTheWall = false;
+    private bool isCollidingWithHole = false;
+
+    // === Sub Stage 05 Flags ===
+    private bool hasFinishedStorageDialogue = false;
+    private bool hasSeenChicken = false;
+    private bool hasFinishedEraseCage = false;
+    private bool hasOpenedBagOfFog = false;
+
+    // === Stage 06 Flags ===
+    private bool hasFinishedEraseBagOfFog = false;
+    private bool hasPlayedEscapeFromGiant = false;
+    private bool hasPlayedClimbBeanTree = false;
+    private bool hasPlayedChopBeanTree = false;
+
+    private bool isCollidingWithBagOfFog = false;
+
+    // === Stage 07 Flags ===
+    private bool hasStartedStage07 = false;
+    private bool hasTalkedToMomSixth = false;
+    private bool hasSeenGoldenChicken = false;
+    private bool hasHeardMomSeventh = false;
+
+    private bool isCollidingWithMomStage07 = false;
+
     // === Repeatable NPC Dialogue ===
     public Dialogue npcDialogue;
     private bool isCollidingWithNPC;
@@ -126,6 +194,24 @@ public class PlayerInteraction : MonoBehaviour
                 if (openingSceneDialogue != null)
                 {
                     StartCoroutine(BeginOpeningSceneFlow());
+                }
+                else if (stage07Dialogue != null)
+                {
+                    StartCoroutine(TriggerStage07Dialogue());
+                }
+                else if (storageDialogue != null)
+                {
+                    StartDialogue(storageDialogue, () =>
+                    {
+                        hasFinishedStorageDialogue = true;
+                    });
+                }
+                else if (enterGiantHouseDialogue != null)
+                {
+                    StartDialogue(enterGiantHouseDialogue, () =>
+                    {
+                        hasFinishedGiantHouseDialogue = true;
+                    });
                 }
                 else if (stage04Dialogue != null)
                 {
@@ -152,6 +238,13 @@ public class PlayerInteraction : MonoBehaviour
             {
                 StartCoroutine(BeginOpeningSceneFlow());
             }
+            else if (enterGiantHouseDialogue != null)
+            {
+                StartDialogue(enterGiantHouseDialogue, () =>
+                {
+                    hasFinishedGiantHouseDialogue = true;
+                });
+            }
             else if (stage04Dialogue != null)
             {
                 StartCoroutine(TriggerStage04Dialogue());
@@ -170,7 +263,6 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
     }
-
 
     private void Update()
     {
@@ -227,6 +319,27 @@ public class PlayerInteraction : MonoBehaviour
             ChangeScene();
         }
 
+        // === Stage 05 ===
+        if (isCollidingWithHole && Input.GetKeyDown(KeyCode.E) && hasSeenHoleOnTheWall)
+        {
+            ChangeToSubStage05();
+        }
+
+        // === Stage 06 ===
+        if (isCollidingWithBagOfFog && Input.GetKeyDown(KeyCode.E) && !hasFinishedEraseBagOfFog)
+        {
+            TogglePanel(eraseBagOfFogPanel, true);
+        }
+
+        // === Stage 07 ===
+        if (isCollidingWithMomStage07 && Input.GetKeyDown(KeyCode.E) && hasStartedStage07 && !hasTalkedToMomSixth)
+        {
+            StartDialogue(momSixthDialogue, () =>
+            {
+                hasTalkedToMomSixth = true;
+                TriggerGoldenChickenPanel();
+            });
+        }
 
         // === NPC Repeatable ===
         if (isCollidingWithNPC && Input.GetKeyDown(KeyCode.E))
@@ -294,7 +407,42 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
+        // === Stage 05 ===
+        if (collision.CompareTag("SawHole") && !hasSeenHoleOnTheWall && hasFinishedGiantHouseDialogue)
+        {
+            hasSeenHoleOnTheWall = true;
+            StartDialogue(holeOnTheWallDialogue);
+        }
 
+        if (collision.CompareTag("HoleOnTheWall"))
+        {
+            isCollidingWithHole = true;
+        }
+
+        // === Sub Stage 05 ===
+        if (collision.CompareTag("SawChicken") && !hasSeenChicken && hasFinishedStorageDialogue)
+        {
+            hasSeenChicken = true;
+            StartDialogue(sawChickenDialogue, () =>
+            {
+                if (eraseCagePanel != null)
+                {
+                    TogglePanel(eraseCagePanel, true);
+                }
+            });
+        }
+
+        // === Stage 06 ===
+        if (collision.CompareTag("BagOfFog"))
+        {
+            isCollidingWithBagOfFog = true;
+        }
+
+        if (collision.CompareTag("Mom"))
+        {
+            isCollidingWithMom = true;
+            isCollidingWithMomStage07 = true;
+        }
 
         // === NPC ===
         if (collision.CompareTag("NPC")) isCollidingWithNPC = true;
@@ -323,6 +471,19 @@ public class PlayerInteraction : MonoBehaviour
         if (collision.CompareTag("BeanTree"))
         {
             isCollidingWithBeanTree = false;
+        }
+        if (collision.CompareTag("HoleOnTheWall"))
+        {
+            isCollidingWithHole = false;
+        }
+        if (collision.CompareTag("BagOfFog"))
+        {
+            isCollidingWithBagOfFog = false;
+        }
+        if (collision.CompareTag("Mom"))
+        {
+            isCollidingWithMom = false;
+            isCollidingWithMomStage07 = false;
         }
     }
 
@@ -358,6 +519,11 @@ public class PlayerInteraction : MonoBehaviour
         {
             hasFinishedStage04Dialogue = true;
         });
+    }
+    private IEnumerator TriggerStage07Dialogue()
+    {
+        yield return new WaitForSeconds(1f);
+        StartDialogue(stage07Dialogue, () => hasStartedStage07 = true);
     }
 
     private IEnumerator ShowBlackFogPuzzlePanel()
@@ -488,6 +654,146 @@ public class PlayerInteraction : MonoBehaviour
             {
                 hasHeardMomFifth = true;
             });
+        }
+    }
+    public void CompleteEraseBagOfFogPuzzle()
+    {
+        hasFinishedEraseBagOfFog = true;
+
+        if (eraseBagOfFogPanel != null)
+            eraseBagOfFogPanel.SetActive(false);
+
+        StartDialogue(finishEraseBagOfFogDialogue, () =>
+        {
+            StartCoroutine(FadeBetweenPanels(eraseBagOfFogPanel, escapeFromGiantPanel, () =>
+            {
+                StartDialogue(escapeFromGiantDialogue, () =>
+                {
+                    TriggerClimbingBeanTree();
+                });
+            }));
+        });
+    }
+    private void TriggerEscapeFromGiant()
+    {
+        if (!hasPlayedEscapeFromGiant && escapeFromGiantPanel != null)
+        {
+            hasPlayedEscapeFromGiant = true;
+
+            StartCoroutine(FadeInThenShowPanel(escapeFromGiantPanel, () =>
+            {
+                Time.timeScale = 0f;
+
+                StartDialogue(escapeFromGiantDialogue, () =>
+                {
+                    StartCoroutine(FadeOutPanelThenBack(escapeFromGiantPanel, () =>
+                    {
+                        Time.timeScale = 1f;
+                        TriggerClimbingBeanTree();
+                    }));
+                });
+            }));
+        }
+    }
+
+    private void TriggerClimbingBeanTree()
+    {
+        StartCoroutine(FadeBetweenPanels(escapeFromGiantPanel, climbingBeanTreePanel, () =>
+        {
+            StartDialogue(climbingBeanTreeDialogue, () =>
+            {
+                TriggerChopBeanTree();
+            });
+        }));
+    }
+
+    private void TriggerChopBeanTree()
+    {
+        StartCoroutine(FadeBetweenPanels(climbingBeanTreePanel, chopBeanTreePanel, () =>
+        {
+            StartDialogue(chopBeanTreeDialogue, () =>
+            {
+                StartCoroutine(FadeToBlack(() =>
+                {
+                    SceneManager.LoadScene(stage07SceneName);
+                }));
+            });
+        }));
+    }
+    private void TriggerGoldenChickenPanel()
+    {
+        if (!hasSeenGoldenChicken && goldenChickenPanel != null)
+        {
+            hasSeenGoldenChicken = true;
+
+            StartCoroutine(FadeInThenShowPanel(goldenChickenPanel, () =>
+            {
+                StartCoroutine(WaitAndCloseGoldenChickenPanel());
+            }));
+        }
+    }
+
+    private IEnumerator WaitAndCloseGoldenChickenPanel()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+
+        StartCoroutine(FadeOutPanelThenBack(goldenChickenPanel, () =>
+        {
+            TriggerMomSeventhDialogue();
+        }));
+    }
+    private void TriggerMomSeventhDialogue()
+    {
+        if (!hasHeardMomSeventh)
+        {
+            StartDialogue(momSeventhDialogue, () =>
+            {
+                hasHeardMomSeventh = true;
+                StartCoroutine(FadeToBlack(() =>
+                {
+                    SceneManager.LoadScene(endingSceneName);
+                }));
+            });
+        }
+    }
+
+
+    public void CompleteEraseCagePuzzle()
+    {
+        hasFinishedEraseCage = true;
+
+        if (eraseCagePanel != null)
+            eraseCagePanel.SetActive(false);
+
+        if (cageObject != null)
+            cageObject.SetActive(false); 
+
+        StartDialogue(finishEraseCageDialogue, () =>
+        {
+            TriggerBagOfFogPanel();
+        });
+    }
+
+    private void TriggerBagOfFogPanel()
+    {
+        if (hasFinishedEraseCage && !hasOpenedBagOfFog && bagOfFogPanel != null)
+        {
+            hasOpenedBagOfFog = true;
+
+            StartCoroutine(FadeInThenShowPanel(bagOfFogPanel, () =>
+            {
+                Time.timeScale = 0f;
+
+                StartDialogue(bagOfFogDialogue, () =>
+                {
+                    Time.timeScale = 1f;
+
+                    StartCoroutine(FadeToBlack(() =>
+                    {
+                        LoadScene06(); 
+                    }));
+                });
+            }));
         }
     }
 
@@ -854,6 +1160,68 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         SceneManager.LoadScene(stage01SceneName);
+    }
+    private void ChangeToSubStage05()
+    {
+        if (!string.IsNullOrEmpty(subStage05SceneName))
+        {
+            SceneManager.LoadScene(subStage05SceneName);
+        }
+        else
+        {
+            Debug.LogWarning("Sub_Stage_05 scene name is not set!");
+        }
+    }
+    private void LoadScene06()
+    {
+        if (!string.IsNullOrEmpty(scene06Name))
+        {
+            SceneManager.LoadScene(scene06Name);
+        }
+        else
+        {
+            Debug.LogWarning("Scene_06 name is not set!");
+        }
+    }
+    private IEnumerator FadeBetweenPanels(GameObject panelToClose, GameObject panelToOpen, System.Action afterFade = null)
+    {
+        if (fadeOverlay == null) yield break;
+
+        fadeOverlay.gameObject.SetActive(true);
+        Color baseColor = fadeOverlay.color;
+
+        // Fade to black
+        float time = 0f;
+        while (time < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(0f, 1f, time / fadeDuration);
+            fadeOverlay.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        fadeOverlay.color = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
+
+       
+        if (panelToClose != null) panelToClose.SetActive(false);
+        if (panelToOpen != null) panelToOpen.SetActive(true);
+
+        yield return new WaitForSecondsRealtime(0.1f);
+
+        // Fade back to clear
+        time = 0f;
+        while (time < fadeDuration)
+        {
+            float alpha = Mathf.Lerp(1f, 0f, time / fadeDuration);
+            fadeOverlay.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+            time += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        fadeOverlay.color = new Color(baseColor.r, baseColor.g, baseColor.b, 0f);
+        fadeOverlay.gameObject.SetActive(false);
+
+        afterFade?.Invoke();
     }
 
 }

@@ -30,6 +30,13 @@ TagManager:
   - Sky
   - BeanTree
   - SawCastle
+  - SawHole
+  - HoleOnTheWall
+  - LockedEraseCage
+  - SawChicken
+  - Cage
+  - BagOfFog
+  - LockedEraseBagOfFog
   layers:
   - Default
   - TransparentFX

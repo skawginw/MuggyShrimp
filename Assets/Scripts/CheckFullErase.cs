@@ -12,12 +12,17 @@ public class CheckFullErase : MonoBehaviour
     public GameObject blackFogObject;
 
     public GameObject brokenShelfPuzzlePanel;
+    public GameObject eraseCagePanel;
+    public GameObject eraseBagOfFogPanel;
 
     public float fadeDuration = 2f;
 
     private bool isFencePuzzle = false;
     private bool isBlackFogPuzzle = false;
     private bool isBrokenShelfPuzzle = false;
+    private bool isEraseCagePuzzle = false;
+    private bool isEraseBagOfFogPuzzle = false;
+
     private bool puzzleCompleted = false;
     private int initialEraseCount;
 
@@ -28,17 +33,15 @@ public class CheckFullErase : MonoBehaviour
             if (transform.parent != null)
             {
                 if (transform.parent.CompareTag("LockedBlackFog"))
-                {
                     isBlackFogPuzzle = true;
-                }
                 else if (transform.parent.CompareTag("LockedBrokenShelf"))
-                {
                     isBrokenShelfPuzzle = true;
-                }
+                else if (transform.parent.CompareTag("LockedEraseCage"))
+                    isEraseCagePuzzle = true;
+                else if (transform.parent.CompareTag("LockedEraseBagOfFog"))
+                    isEraseBagOfFogPuzzle = true;
                 else
-                {
                     isFencePuzzle = true;
-                }
             }
         }
 
@@ -52,17 +55,15 @@ public class CheckFullErase : MonoBehaviour
             puzzleCompleted = true;
 
             if (isFencePuzzle)
-            {
                 CompleteFencePuzzle();
-            }
             else if (isBlackFogPuzzle)
-            {
                 CompleteBlackFogPuzzle();
-            }
             else if (isBrokenShelfPuzzle)
-            {
                 CompleteBrokenShelfPuzzle();
-            }
+            else if (isEraseCagePuzzle)
+                CompleteEraseCagePuzzle();
+            else if (isEraseBagOfFogPuzzle)
+                CompleteEraseBagOfFogPuzzle();
         }
     }
 
@@ -110,27 +111,52 @@ public class CheckFullErase : MonoBehaviour
         puzzleCompleted = true;
 
         if (brokenShelfPuzzlePanel != null)
-        {
             brokenShelfPuzzlePanel.SetActive(false);
-        }
 
-        
         if (gameObject != null)
-        {
-            gameObject.SetActive(false); // or use Destroy(gameObject) if you prefer
-        }
+            gameObject.SetActive(false);
 
         PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
         if (playerInteraction != null)
         {
-            playerInteraction.CompleteBrokenShelfPuzzle(); 
-        }
-        else
-        {
-            Debug.LogWarning("PlayerInteraction not found!");
+            playerInteraction.CompleteBrokenShelfPuzzle();
         }
     }
 
+    void CompleteEraseCagePuzzle()
+    {
+        DestroyEraserMarks();
+        DisableEraser();
+
+        if (eraseCagePanel != null)
+            eraseCagePanel.SetActive(false);
+
+        if (gameObject != null)
+            gameObject.SetActive(false);
+
+        PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+        if (playerInteraction != null)
+        {
+            playerInteraction.CompleteEraseCagePuzzle();
+        }
+    }
+    void CompleteEraseBagOfFogPuzzle()
+    {
+        DestroyEraserMarks();
+        DisableEraser();
+
+        if (eraseBagOfFogPanel != null)
+            eraseBagOfFogPanel.SetActive(false);
+
+        if (gameObject != null)
+            gameObject.SetActive(false);
+
+        PlayerInteraction playerInteraction = FindObjectOfType<PlayerInteraction>();
+        if (playerInteraction != null)
+        {
+            playerInteraction.CompleteEraseBagOfFogPuzzle();
+        }
+    }
 
     IEnumerator FadeOutAndDestroy(GameObject obj, float duration)
     {
