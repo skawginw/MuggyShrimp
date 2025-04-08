@@ -70,7 +70,6 @@ public class PlayerDrawing : MonoBehaviour
                 ResetDrawing();
             }
         }
-
         if (Input.GetMouseButtonUp(0))
         {
             isDrawing = false;
@@ -79,7 +78,12 @@ public class PlayerDrawing : MonoBehaviour
             {
                 CompleteDrawing();
             }
+            else
+            {
+                ResetDrawing(); // Restart the puzzle if incomplete
+            }
         }
+
     }
 
     void StartDrawing(Vector2 startPos)

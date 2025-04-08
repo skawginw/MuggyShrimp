@@ -10,12 +10,11 @@ public class PlayerInteraction : MonoBehaviour
     public DialogueManager dialogueManager;
     public Image fadeOverlay;
     public float fadeDuration = 1f;
+    public GameObject goHereObject;
     public GameObject skyObject;
     public GameObject beanTreeObject;
     public GameObject cageObject; // Assign in the Inspector
     public GameObject tutorialPanel;  // Assign in inspector
-    private bool hasFinishedTutorial = false;
-
 
     // === Opening Scene ===
     public Dialogue openingSceneDialogue;
@@ -166,8 +165,6 @@ public class PlayerInteraction : MonoBehaviour
     // === Stage 06 Flags ===
     private bool hasFinishedEraseBagOfFog = false;
     private bool hasPlayedEscapeFromGiant = false;
-    private bool hasPlayedClimbBeanTree = false;
-    private bool hasPlayedChopBeanTree = false;
 
     private bool isCollidingWithBagOfFog = false;
 
@@ -208,17 +205,11 @@ public class PlayerInteraction : MonoBehaviour
                 }
                 else if (storageDialogue != null)
                 {
-                    StartDialogue(storageDialogue, () =>
-                    {
-                        hasFinishedStorageDialogue = true;
-                    });
+                    StartCoroutine(TriggerStorageDialogue());
                 }
                 else if (enterGiantHouseDialogue != null)
                 {
-                    StartDialogue(enterGiantHouseDialogue, () =>
-                    {
-                        hasFinishedGiantHouseDialogue = true;
-                    });
+                    StartCoroutine(TriggerEnterGiantHouse());
                 }
                 else if (stage04Dialogue != null)
                 {
@@ -284,15 +275,35 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (!hasTalkedToMomFirst && hasSeenMom)
             {
-                StartDialogue(momFirstDialogue, () => hasTalkedToMomFirst = true);
+                StartDialogue(momFirstDialogue, () =>
+                {
+                    hasTalkedToMomFirst = true;
+                    ShowGoHereAtTarget(GameObject.FindWithTag("BlackFog")?.transform);
+                });
             }
             else if (hasCompletedBlackFog && !hasTalkedToMomSecond)
             {
-                StartDialogue(momSecondDialogue, () => hasTalkedToMomSecond = true);
+                StartDialogue(momSecondDialogue, () =>
+                {
+                    hasTalkedToMomSecond = true;
+                    GameObject jack = GameObject.FindGameObjectWithTag("Jack");
+                    if (jack != null)
+                    {
+                        ShowGoHereAtTarget(jack.transform);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Jack not found with tag!");
+                    }
+                });
             }
             else if (hasTalkedToJackSecond && hasCompletedCowMissingLeg && !hasTalkedToMomThird)
             {
-                StartDialogue(momThirdDialogue, () => hasTalkedToMomThird = true);
+                StartDialogue(momThirdDialogue, () =>
+                {
+                    hasTalkedToMomThird = true;
+                    ShowGoHereAtTarget(GameObject.FindWithTag("SceneChangeTrigger")?.transform);
+                });
             }
         }
 
@@ -303,7 +314,11 @@ public class PlayerInteraction : MonoBehaviour
 
         if (isCollidingWithJack && Input.GetKeyDown(KeyCode.E) && hasTalkedToMomSecond && !hasTalkedToJack)
         {
-            StartDialogue(jackFirstDialogue, () => hasTalkedToJack = true);
+            StartDialogue(jackFirstDialogue, () =>
+            {
+                hasTalkedToJack = true;
+                ShowGoHereAtTarget(GameObject.FindWithTag("Fence")?.transform);
+            });
         }
 
         if (isCollidingWithFence && Input.GetKeyDown(KeyCode.E) && hasTalkedToJack && !hasCompletedFencePuzzle)
@@ -314,7 +329,11 @@ public class PlayerInteraction : MonoBehaviour
         // === Stage 02 ===
         if (isCollidingWithUncle && Input.GetKeyDown(KeyCode.E) && hasCompletedBrokenShelfPuzzle && !hasTalkedToUncle)
         {
-            StartDialogue(uncleFirstDialogue, () => hasTalkedToUncle = true);
+            StartDialogue(uncleFirstDialogue, () =>
+            {
+                hasTalkedToUncle = true;
+                ShowGoHereAtTarget(GameObject.FindWithTag("SceneChangeTrigger")?.transform);
+            });
         }
 
         // === Stage 03 ===
@@ -506,8 +525,6 @@ public class PlayerInteraction : MonoBehaviour
     if (tutorialPanel != null)
         tutorialPanel.SetActive(false);
 
-    hasFinishedTutorial = true;
-
     yield return new WaitForSecondsRealtime(0.3f); 
     StartCoroutine(TriggerOpeningDialogue());
 }
@@ -524,33 +541,66 @@ public class PlayerInteraction : MonoBehaviour
 
     private IEnumerator TriggerOpeningDialogue()
     {
-        yield return new WaitForSeconds(1f);
-        StartDialogue(openingDialogue);
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(openingDialogue, () =>
+        {
+            ShowGoHereAtTarget(GameObject.FindWithTag("Mom")?.transform);
+        });
     }
 
     private IEnumerator TriggerStage02Dialogue()
     {
-        yield return new WaitForSeconds(1f);
-        StartDialogue(stage02Dialogue);
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(stage02Dialogue, () =>
+        {
+            ShowGoHereAtTarget(GameObject.FindWithTag("BrokenShelf")?.transform);
+        });
     }
 
     private IEnumerator TriggerStage03Dialogue()
     {
-        yield return new WaitForSeconds(1f);
-        StartDialogue(stage03Dialogue, () => hasFinishedStage03Dialogue = true);
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(stage03Dialogue, () =>
+        {
+            hasFinishedStage03Dialogue = true;
+            ShowGoHereAtTarget(GameObject.FindWithTag("Mom")?.transform);
+        });
     }
     private IEnumerator TriggerStage04Dialogue()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         StartDialogue(stage04Dialogue, () =>
         {
             hasFinishedStage04Dialogue = true;
+            ShowGoHereAtTarget(GameObject.FindWithTag("GiantCastle")?.transform);
+        });
+    }
+    private IEnumerator TriggerEnterGiantHouse()
+    {
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(enterGiantHouseDialogue, () =>
+        {
+            hasFinishedGiantHouseDialogue = true;
+            ShowGoHereAtTarget(GameObject.FindWithTag("HoleOnTheWall")?.transform);
+        });
+    }
+    private IEnumerator TriggerStorageDialogue()
+    {
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(storageDialogue, () =>
+        {
+            hasFinishedStorageDialogue = true;
+            ShowGoHereAtTarget(GameObject.FindWithTag("Chicken")?.transform);
         });
     }
     private IEnumerator TriggerStage07Dialogue()
     {
-        yield return new WaitForSeconds(1f);
-        StartDialogue(stage07Dialogue, () => hasStartedStage07 = true);
+        yield return new WaitForSeconds(0.5f);
+        StartDialogue(stage07Dialogue, () =>
+        {
+            hasStartedStage07 = true;
+            ShowGoHereAtTarget(GameObject.FindWithTag("Mom")?.transform);
+        });
     }
 
     private IEnumerator ShowBlackFogPuzzlePanel()
@@ -589,7 +639,6 @@ public class PlayerInteraction : MonoBehaviour
             }));
         }
     }
-
 
     private void TriggerJackThirdDialogue()
     {
@@ -649,6 +698,7 @@ public class PlayerInteraction : MonoBehaviour
             StartDialogue(jackFourthDialogue, () =>
             {
                 hasHeardJackFourth = true;
+                ShowGoHereAtTarget(GameObject.FindWithTag("BeanTree")?.transform);
                 TriggerMomFifthDialogue();
             });
         }));
@@ -839,12 +889,17 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         StartDialogue(finishBrokenShelfDialogue);
+        ShowGoHereAtTarget(GameObject.FindWithTag("Uncle")?.transform);
     }
 
     public void CompleteBlackFog()
     {
         hasCompletedBlackFog = true;
-        StartDialogue(finishBlackFogDialogue);
+        StartDialogue(finishBlackFogDialogue, () =>
+        {
+            GameObject mom = GameObject.FindGameObjectWithTag("Mom");
+            ShowGoHereAtTarget(mom?.transform);
+        });
     }
 
     public void CompleteFencePuzzle()
@@ -858,7 +913,14 @@ public class PlayerInteraction : MonoBehaviour
         hasCompletedCowMissingLeg = true;
         Time.timeScale = 1f;
         StartCoroutine(CloseCowMissingLegPanelAfterDelay(2f, () =>
-            StartDialogue(jackSecondDialogue, () => hasTalkedToJackSecond = true)));
+        {
+            StartDialogue(jackSecondDialogue, () =>
+            {
+                hasTalkedToJackSecond = true;
+                GameObject mom = GameObject.FindGameObjectWithTag("Mom");
+                ShowGoHereAtTarget(mom?.transform);
+            });
+        }));
         ChangeCowMissingLegSprite();
     }
 
@@ -1250,5 +1312,37 @@ public class PlayerInteraction : MonoBehaviour
 
         afterFade?.Invoke();
     }
+    public void ShowGoHereAtTarget(Transform target)
+    {
+        if (goHereObject != null && target != null)
+        {
+            goHereObject.SetActive(true);
 
+            GoHereFollower follower = goHereObject.GetComponent<GoHereFollower>();
+            if (follower != null)
+            {
+                follower.SetTarget(target);
+            }
+            else
+            {
+                Debug.LogWarning("GoHereFollower script not found on GoHereObject.");
+            }
+        }
+    }
+
+    public void HideGoHere()
+    {
+        if (goHereObject != null)
+        {
+            GoHereFollower follower = goHereObject.GetComponent<GoHereFollower>();
+            if (follower != null)
+            {
+                follower.ClearTarget();
+            }
+            else
+            {
+                goHereObject.SetActive(false);
+            }
+        }
+    }
 }
