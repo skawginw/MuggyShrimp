@@ -37,6 +37,10 @@ TagManager:
   - Cage
   - BagOfFog
   - LockedEraseBagOfFog
+  - BlackFogVisual
+  - GiantCastle
+  - Hole
+  - Chicken
   layers:
   - Default
   - TransparentFX
