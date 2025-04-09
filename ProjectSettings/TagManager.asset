@@ -120,6 +120,9 @@ TagManager:
   - name: CloseUp
     uniqueID: 899166957
     locked: 0
+  - name: Filter
+    uniqueID: 1871928941
+    locked: 0
   - name: UI
     uniqueID: 2810616029
     locked: 0

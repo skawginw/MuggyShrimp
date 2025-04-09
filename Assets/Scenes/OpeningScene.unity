@@ -565,7 +565,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1827448171
-  m_SortingLayer: 21
+  m_SortingLayer: 22
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0afce83da18124549ac659c002f83e79, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1143,7 +1143,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1780145057, guid: bf47fdee67379a747971f38385d81d8f, type: 3}
+  m_Sprite: {fileID: 1792740132, guid: efc52cbc12d181643983158592ddaa76, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1601,6 +1601,7 @@ MonoBehaviour:
   dialogueManager: {fileID: 1158280727}
   fadeOverlay: {fileID: 566858662}
   fadeDuration: 1
+  goHereObject: {fileID: 0}
   skyObject: {fileID: 0}
   beanTreeObject: {fileID: 0}
   cageObject: {fileID: 0}
@@ -1708,7 +1709,7 @@ LineRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -668941927
-  m_SortingLayer: 19
+  m_SortingLayer: 20
   m_SortingOrder: 10
   m_Positions: []
   m_Parameters:
@@ -2043,7 +2044,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -750573155
-  m_SortingLayer: 16
+  m_SortingLayer: 17
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c6911201cd5ed754c8fb9a225cc20ddf, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

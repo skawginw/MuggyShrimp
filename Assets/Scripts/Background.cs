@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Background : MonoBehaviour
@@ -8,17 +6,15 @@ public class Background : MonoBehaviour
     public GameObject cam;
     public float parallaxEffect;
 
-    // Start is called before the first frame update
     void Start()
     {
         startPos = transform.position.x;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         float distance = cam.transform.position.x * parallaxEffect;
-
-        transform.position = new Vector3(startPos + distance, transform.position.y, transform.position.z);
+        float newX = Mathf.Round((startPos + distance) * 100f) / 100f; // Optional rounding
+        transform.position = new Vector3(newX, transform.position.y, transform.position.z);
     }
 }
