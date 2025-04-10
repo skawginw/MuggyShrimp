@@ -130,6 +130,14 @@ public class DialogueManager : MonoBehaviour
         dialogueBox.SetActive(false);
         DisableAllCharacters();
         Time.timeScale = 1f;
+
+        StopAllCoroutines();
+
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
         onDialogueComplete?.Invoke();
     }
 

@@ -35,7 +35,7 @@ public class PlayerDrawing : MonoBehaviour
         // Set color & opacity
         lineRenderer.startColor = new Color(1f, 0f, 0f, 1f); // Red
         lineRenderer.endColor = new Color(1f, 0f, 0f, 1f);
-        lineRenderer.material.color = Color.grey; // Ensure material uses color
+        lineRenderer.material.color = Color.black; // Ensure material uses color
 
         // Adjust width and sorting order
         lineRenderer.startWidth = 0.1f;
@@ -45,26 +45,27 @@ public class PlayerDrawing : MonoBehaviour
 
     void Update()
     {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (currentDotIndex == 0 && IsMouseOverDot(mousePos, 0))
+            if (currentDotIndex == 0 && IsMouseOverDot(mouseWorldPos, 0))
             {
-                StartDrawing(mousePos);
+                StartDrawing(mouseWorldPos);
             }
         }
 
         if (Input.GetMouseButton(0) && isDrawing)
         {
-            if (currentDotIndex < dots.Length && IsMouseOverDot(mousePos, currentDotIndex))
+            if (currentDotIndex < dots.Length && IsMouseOverDot(mouseWorldPos, currentDotIndex))
             {
                 // Correctly reached the next dot
                 AddPointToLine(dots[currentDotIndex].transform.position);
                 HideDot(currentDotIndex);
                 currentDotIndex++;
             }
-            else if (TouchedWrongDot(mousePos))
+            else if (TouchedWrongDot(mouseWorldPos))
             {
                 // Player touched a wrong dot — reset
                 ResetDrawing();
@@ -99,6 +100,7 @@ public class PlayerDrawing : MonoBehaviour
 
     void AddPointToLine(Vector3 point)
     {
+        point.z = 0f;
         if (drawPoints.Count == 0 || Vector3.Distance(drawPoints[drawPoints.Count - 1], point) > 0.1f)
         {
             drawPoints.Add(point);
