@@ -13,7 +13,8 @@ public class PlayerInteraction : MonoBehaviour
     public GameObject goHereObject;
     public GameObject skyObject;
     public GameObject beanTreeObject;
-    public GameObject cageObject; // Assign in the Inspector
+    public GameObject cageObject;
+    public GameObject markObject; // Assign in the Inspector
     public GameObject tutorialPanel;  // Assign in inspector
 
     // === Opening Scene ===
@@ -45,6 +46,7 @@ public class PlayerInteraction : MonoBehaviour
     public Dialogue brokenShelfDialogue;
     public Dialogue finishBrokenShelfDialogue;
     public Dialogue uncleFirstDialogue;
+    public Dialogue deadEndStage02;
 
     public GameObject brokenShelfPuzzlePanel;
 
@@ -131,6 +133,8 @@ public class PlayerInteraction : MonoBehaviour
     private bool hasCompletedBrokenShelfPuzzle = false;
     private bool isCollidingWithUncle = false;
     private bool hasTalkedToUncle = false;
+    private bool isCollidingWithDeadEnd = false;
+    private bool hasStartedDeadEndDialogue = false;
     public GameObject currentBrokenShelfObject;
 
     // === Stage 03 Flags ===
@@ -336,6 +340,12 @@ public class PlayerInteraction : MonoBehaviour
             });
         }
 
+        if (isCollidingWithDeadEnd && hasTalkedToUncle && !hasStartedDeadEndDialogue)
+        {
+            hasStartedDeadEndDialogue = true;
+            StartDialogue(deadEndStage02);
+        }
+
         // === Stage 03 ===
         if (isCollidingWithMomStage03 && Input.GetKeyDown(KeyCode.E) && hasFinishedStage03Dialogue && !hasTalkedToMomFourth)
         {
@@ -360,6 +370,8 @@ public class PlayerInteraction : MonoBehaviour
         // === Stage 06 ===
         if (isCollidingWithBagOfFog && Input.GetKeyDown(KeyCode.E) && !hasFinishedEraseBagOfFog)
         {
+            if (markObject != null)
+                markObject.SetActive(false);
             TogglePanel(eraseBagOfFogPanel, true);
         }
 
@@ -389,8 +401,11 @@ public class PlayerInteraction : MonoBehaviour
         // === Stage 01 ===
         if (collision.CompareTag("SawMomDialogue") && !hasSeenMom)
         {
-            StartDialogue(sawMomDialogue, () => hasSeenMom = true);
+            hasSeenMom = true;
+            Destroy(collision.gameObject);
+            StartDialogue(sawMomDialogue);
         }
+
         if (collision.CompareTag("Mom")) isCollidingWithMom = true;
         if (collision.CompareTag("BlackFog")) isCollidingWithBlackFog = true;
         if (collision.CompareTag("Jack")) isCollidingWithJack = true;
@@ -413,6 +428,7 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         if (collision.CompareTag("Uncle")) isCollidingWithUncle = true;
+        if (collision.CompareTag("DeadEnd")) isCollidingWithDeadEnd = true;
 
         // === Stage 03 ===
         if (collision.CompareTag("Mom")) isCollidingWithMomStage03 = true;

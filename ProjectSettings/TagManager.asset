@@ -41,6 +41,8 @@ TagManager:
   - GiantCastle
   - Hole
   - Chicken
+  - Mark
+  - DeadEnd
   layers:
   - Default
   - TransparentFX
@@ -123,14 +125,14 @@ TagManager:
   - name: Filter
     uniqueID: 1871928941
     locked: 0
+  - name: Erasable
+    uniqueID: 3832144683
+    locked: 0
   - name: UI
     uniqueID: 2810616029
     locked: 0
   - name: Panel
     uniqueID: 3544394141
-    locked: 0
-  - name: Erasable
-    uniqueID: 3832144683
     locked: 0
   - name: Eraser
     uniqueID: 4115655669

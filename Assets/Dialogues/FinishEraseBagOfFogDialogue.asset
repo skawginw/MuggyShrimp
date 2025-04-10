@@ -24,4 +24,4 @@ MonoBehaviour:
     characterAnimation: {fileID: 0}
   - characterName: Jack
     text: "\u0E21\u0E34\u0E25\u0E25\u0E35\u0E48!! \u0E2B\u0E19\u0E35\u0E40\u0E23\u0E47\u0E27!!"
-    characterAnimation: {fileID: 9100000, guid: c7d7dcf515dc6d840b1eefc3dd067114, type: 2}
+    characterAnimation: {fileID: 9100000, guid: 066f317533ee3ea47b2338b82adf80c7, type: 2}
