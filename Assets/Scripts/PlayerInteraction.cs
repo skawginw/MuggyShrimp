@@ -274,6 +274,10 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePanel(pausePanel, !pausePanel.activeSelf);
+        }
         // === Stage 01 ===
         if (isCollidingWithMom && Input.GetKeyDown(KeyCode.E))
         {
