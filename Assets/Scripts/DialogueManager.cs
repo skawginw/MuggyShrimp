@@ -16,6 +16,10 @@ public class DialogueManager : MonoBehaviour
     private Queue<DialogueLine> dialogueLines;
     private System.Action onDialogueComplete;
 
+    private bool isDialoguePlaying = false;
+    public bool IsDialoguePlaying => isDialoguePlaying;
+
+
     private void Awake()
     {
         dialogueLines = new Queue<DialogueLine>();
@@ -30,6 +34,8 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
+        isDialoguePlaying = true;
+
         dialogueBox.SetActive(true);
         Time.timeScale = 1f;
         DisableAllCharacters();
@@ -137,6 +143,8 @@ public class DialogueManager : MonoBehaviour
         {
             audioSource.Stop();
         }
+
+        isDialoguePlaying = false;
 
         onDialogueComplete?.Invoke();
     }

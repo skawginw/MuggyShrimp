@@ -279,7 +279,7 @@ public class PlayerInteraction : MonoBehaviour
             TogglePanel(pausePanel, !pausePanel.activeSelf);
         }
         // === Stage 01 ===
-        if (isCollidingWithMom && Input.GetKeyDown(KeyCode.E))
+        if (isCollidingWithMom && Input.GetKeyDown(KeyCode.E) && !dialogueManager.IsDialoguePlaying)
         {
             if (!hasTalkedToMomFirst && hasSeenMom)
             {
@@ -320,7 +320,7 @@ public class PlayerInteraction : MonoBehaviour
             StartCoroutine(ShowBlackFogPuzzlePanel());
         }
 
-        if (isCollidingWithJack && Input.GetKeyDown(KeyCode.E) && hasTalkedToMomSecond && !hasTalkedToJack)
+        if (isCollidingWithJack && Input.GetKeyDown(KeyCode.E) && hasTalkedToMomSecond && !hasTalkedToJack && !dialogueManager.IsDialoguePlaying)
         {
             StartDialogue(jackFirstDialogue, () =>
             {
@@ -335,7 +335,7 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // === Stage 02 ===
-        if (isCollidingWithUncle && Input.GetKeyDown(KeyCode.E) && hasCompletedBrokenShelfPuzzle && !hasTalkedToUncle)
+        if (isCollidingWithUncle && Input.GetKeyDown(KeyCode.E) && hasCompletedBrokenShelfPuzzle && !hasTalkedToUncle && !dialogueManager.IsDialoguePlaying)
         {
             StartDialogue(uncleFirstDialogue, () =>
             {
@@ -351,7 +351,7 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // === Stage 03 ===
-        if (isCollidingWithMomStage03 && Input.GetKeyDown(KeyCode.E) && hasFinishedStage03Dialogue && !hasTalkedToMomFourth)
+        if (isCollidingWithMomStage03 && Input.GetKeyDown(KeyCode.E) && hasFinishedStage03Dialogue && !hasTalkedToMomFourth && !dialogueManager.IsDialoguePlaying)
         {
             StartDialogue(momFourthDialogue, () =>
             {
@@ -380,7 +380,7 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         // === Stage 07 ===
-        if (isCollidingWithMomStage07 && Input.GetKeyDown(KeyCode.E) && hasStartedStage07 && !hasTalkedToMomSixth)
+        if (isCollidingWithMomStage07 && Input.GetKeyDown(KeyCode.E) && hasStartedStage07 && !hasTalkedToMomSixth && !dialogueManager.IsDialoguePlaying)
         {
             StartDialogue(momSixthDialogue, () =>
             {
@@ -548,8 +548,6 @@ public class PlayerInteraction : MonoBehaviour
     yield return new WaitForSecondsRealtime(0.3f); 
     StartCoroutine(TriggerOpeningDialogue());
 }
-
-
 
     private void StartDialogue(Dialogue dialogue, System.Action onComplete = null)
     {
@@ -742,7 +740,6 @@ public class PlayerInteraction : MonoBehaviour
         }));
     }
 
-
     private void TriggerMomFifthDialogue()
     {
         if (!hasHeardMomFifth && hasHeardJackFourth)
@@ -792,7 +789,6 @@ public class PlayerInteraction : MonoBehaviour
             }));
         }
     }
-
     private void TriggerClimbingBeanTree()
     {
         StartCoroutine(FadeBetweenPanels(escapeFromGiantPanel, climbingBeanTreePanel, () =>
@@ -853,8 +849,6 @@ public class PlayerInteraction : MonoBehaviour
             });
         }
     }
-
-
     public void CompleteEraseCagePuzzle()
     {
         hasFinishedEraseCage = true;
@@ -1203,7 +1197,6 @@ public class PlayerInteraction : MonoBehaviour
         yield return null;
     }
 
-
     private IEnumerator FadeOutBookPanel()
     {
         yield return new WaitForSecondsRealtime(0.2f);
@@ -1349,7 +1342,6 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
     }
-
     public void HideGoHere()
     {
         if (goHereObject != null)
